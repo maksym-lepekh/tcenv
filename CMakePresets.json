@@ -1,0 +1,111 @@
+{
+    "version": 6,
+    "cmakeMinimumRequired": {
+      "major": 3,
+      "minor": 25,
+      "patch": 0
+    },
+    "configurePresets": [
+      {
+        "name": "common",
+        "hidden":true,
+        "binaryDir": "${sourceDir}/cmake-build-${presetName}",
+        "generator": "Ninja",
+        "cacheVariables": {
+            "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+        }
+      },
+      {
+        "name": "base-clang",
+        "hidden": true,
+        "cacheVariables": {
+          "CMAKE_CXX_COMPILER": "clang++"
+        }
+      },
+      {
+        "name": "base-gcc",
+        "hidden": true,
+        "cacheVariables": {
+          "CMAKE_CXX_COMPILER": "g++"
+        }
+      },
+      {
+        "name": "base-debug",
+        "hidden": true,
+        "cacheVariables": {
+          "CMAKE_BUILD_TYPE": "Debug"
+        },
+        "generator": "Ninja"
+      },
+      {
+        "name": "debug-gcc",
+        "inherits": ["base-gcc", "base-debug", "common"]
+      },
+      {
+        "name": "debug-clang",
+        "inherits": ["base-clang", "base-debug", "common"]
+      }
+    ],
+    "buildPresets": [
+      {
+        "name": "clang",
+        "configurePreset": "debug-clang",
+        "cleanFirst": true
+      },
+      {
+        "name": "gcc",
+        "configurePreset": "debug-gcc",
+        "cleanFirst": true
+      }
+    ],
+    "testPresets": [
+      {
+        "name": "clang",
+        "configurePreset": "debug-clang",
+        "output": {"outputOnFailure": true},
+        "execution": {"noTestsAction": "error", "stopOnFailure": true}
+      },
+      {
+        "name": "gcc",
+        "inherits": ["clang"],
+        "configurePreset": "debug-gcc"
+      }
+    ],
+    "workflowPresets": [
+      {
+        "name": "gcc",
+        "steps": [
+          {
+            "type": "configure",
+            "name": "debug-gcc"
+          },
+          {
+            "type": "build",
+            "name": "gcc"
+          },
+          {
+            "type": "test",
+            "name": "gcc"
+          }
+        ]
+      },
+      {
+        "name": "clang",
+        "steps": [
+          {
+            "type": "configure",
+            "name": "debug-clang"
+          },
+          {
+            "type": "build",
+            "name": "clang"
+          },
+          {
+            "type": "test",
+            "name": "clang"
+          }
+        ]
+      }
+    ]
+  }
+  
