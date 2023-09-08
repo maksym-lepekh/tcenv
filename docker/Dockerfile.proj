@@ -1,7 +1,7 @@
-FROM bitnami/minideb:latest
+FROM alpine:3.18
 
-RUN install_packages g++
-RUN install_packages cmake
-RUN install_packages ninja-build
-RUN install_packages libboost-all-dev
-RUN install_packages libarchive-dev
+RUN apk add --no-cache g++ gdb
+RUN apk add --no-cache cmake pkgconf ninja-build ninja-is-really-ninja lf make
+RUN apk add --no-cache boost1.82-dev boost1.82-static
+RUN apk add --no-cache libarchive-dev libarchive-static acl-static zlib-static xz-static bzip2-static expat-static zstd-static lz4-static
+RUN apk add --no-cache openssl-dev openssl-libs-static

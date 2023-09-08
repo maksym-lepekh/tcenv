@@ -7,14 +7,12 @@
 
 
 #include <boost/filesystem.hpp>
-#include <archive.h>
-
 
 namespace archive_util
 {
     namespace fs = boost::filesystem;
 
-    bool extract(fs::path input, fs::path dest);
+    bool extract(const fs::path& input, const fs::path& dest);
 }
 
 #endif //TCENV_ARCHIVE_UTIL_HPP

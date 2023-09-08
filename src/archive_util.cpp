@@ -1,6 +1,8 @@
 #include "archive_util.hpp"
 #include "common.hpp"
-
+#include "c_api.hpp"
+#include <archive.h>
+#include <archive_entry.h>
 
 namespace
 {
@@ -15,33 +17,35 @@ namespace
             if (r == ARCHIVE_EOF)
                 return (ARCHIVE_OK);
             if (r != ARCHIVE_OK)
-                return (r);
+                return r;
             auto ret = archive_write_data_block(aw, buff, size, offset);
             if (ret != ARCHIVE_OK) {
-                log("archive_write_data_block()", archive_error_string(aw));
-                return (ret);
+                log("archive_write_data_block() ", archive_error_string(aw));
+                return ret;
             }
         }
     }
 }
 
-
-bool archive_util::extract(fs::path input, fs::path dest)
+bool archive_util::extract(const fs::path& input, const fs::path& dest)
 {
-    auto reader = archive_read_new();
-    AT_SCOPE_EXIT(archive_read_free(reader));
+    log("input = ", input);
+    log("dest = ", dest);
+
+    auto reader = c_api::opaque(archive_read_new, archive_read_free);
 
     archive_read_support_format_all(reader);
+    archive_read_support_filter_all(reader);
+
     auto ret = archive_read_open_filename(reader, input.c_str(), 10240);
     if (ret != 0)
     {
-        log("archive_read_open_filename()", ret, archive_error_string(reader));
+        log("archive_read_open_filename() ", ret, " ", archive_error_string(reader));
         return false;
     }
     AT_SCOPE_EXIT(archive_read_close(reader));
 
-    auto writer = archive_write_disk_new();
-    AT_SCOPE_EXIT(archive_write_free(writer));
+    auto writer = c_api::opaque(archive_write_disk_new, archive_write_free);
 
     for(;;)
     {
@@ -52,14 +56,17 @@ bool archive_util::extract(fs::path input, fs::path dest)
 
         if (ret != ARCHIVE_OK)
         {
-            log("archive_read_next_header()", archive_error_string(reader));
+            log("archive_read_next_header() ", archive_error_string(reader));
             return false;
         }
+
+        auto dest_pathname = dest / archive_entry_pathname(entry);
+        archive_entry_set_pathname(entry, dest_pathname.c_str());
 
         ret = archive_write_header(writer, entry);
         if (ret != ARCHIVE_OK)
         {
-            log("archive_write_header()", archive_error_string(writer));
+            log("archive_write_header() ", archive_error_string(writer));
             return false;
         }
         else {
@@ -67,9 +74,11 @@ bool archive_util::extract(fs::path input, fs::path dest)
             ret = archive_write_finish_entry(writer);
             if (ret != ARCHIVE_OK)
             {
-                log("archive_write_finish_entry()", archive_error_string(writer));
+                log("archive_write_finish_entry() ", archive_error_string(writer));
                 return false;
             }
         }
     }
+
+    return true;
 }

@@ -1,4 +1,3 @@
-#include <iostream>
 #include <fstream>
 #include <string>
 #include <boost/process.hpp>
@@ -8,6 +7,8 @@
 #include <archive.h>
 
 #include "archive_util.hpp"
+#include "download_util.hpp"
+#include "common.hpp"
 
 namespace fs = boost::filesystem;
 namespace proc = boost::process;
@@ -213,6 +214,21 @@ int main(int argc, char* argv[])
         build_list = std::vector<recipe*>{
                 &coreutils, &sed, &grep, &make, &gawk, &glibc, &binutils, &gcc
         };
+    }
+
+    if (argv[1] == "test"s)
+    {
+        auto dest_dir = store::get_src_path("dummy");
+        fs::create_directories(dest_dir);
+
+        auto url = "https://ftp.gnu.org/gnu/sed/sed-4.9.tar.xz";
+        auto dest = download_util::download(url, dest_dir);
+
+        if (archive_util::extract(dest.value(), store::get_src_path("dummy")))
+        {
+            return EXIT_SUCCESS;
+        }
+        return EXIT_FAILURE;
     }
 
     for (auto& p: build_list)

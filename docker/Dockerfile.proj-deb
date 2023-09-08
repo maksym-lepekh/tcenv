@@ -1,0 +1,9 @@
+FROM bitnami/minideb:latest
+
+RUN install_packages lf nano less
+RUN install_packages g++ gdb
+RUN install_packages cmake ninja-build pkg-config
+RUN install_packages libboost-all-dev
+RUN install_packages libarchive-dev libacl1-dev zlib1g-dev
+RUN install_packages libcurl4-openssl-dev libnghttp2-dev libidn2-dev librtmp-dev libssh2-1-dev libpsl-dev libkrb5-dev
+# RUN install_packages  libgpg-error-dev libssl-dev  libldap-dev
