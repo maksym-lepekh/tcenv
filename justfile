@@ -1,6 +1,4 @@
-oci_tool := 'docker'
-build_dir := 'cmake-build-out'
-ug_pair := `id -u` + ':' + `id -g`
+oci_tool := `which podman > /dev/null && echo podman || echo docker`
 
 _default:
   @just --list
@@ -9,24 +7,28 @@ _default:
 build-image IMAGE='proj':
     {{oci_tool}} build -f docker/Dockerfile.{{IMAGE}} -t tvenv:{{IMAGE}} docker
 
-_run IMAGE DIR *ARGS: ( build-image IMAGE )
-    {{oci_tool}} run -it -u {{ug_pair}} -v ~/tcroot:/tcroot:Z -v ./{{DIR}}:/proj:Z -w /proj tvenv:{{IMAGE}} {{ARGS}}
+_prep_volumes:
+    {{oci_tool}} volume create tcenv-tcroot
+    {{oci_tool}} volume create tcenv-build
+
+_run IMAGE *ARGS: ( build-image IMAGE ) _prep_volumes
+    {{oci_tool}} run --rm -it -v tcenv-tcroot:/tcroot -v `pwd`:/proj -v tcenv-build:/proj-out -w /proj-out tvenv:{{IMAGE}} {{ARGS}}
 
 # enter default shell of container
-shell IMAGE='proj': ( _run IMAGE '' )
+shell IMAGE='proj': ( _run IMAGE )
 
 # inspect container image
 dive IMAGE='proj': ( build-image IMAGE )
     dive tvenv:{{IMAGE}}
 
 # browse files in container
-lf IMAGE='proj': ( _run IMAGE '' 'lf' )
+lf IMAGE='proj': ( _run IMAGE 'lf' )
 
 # build project
-build *ARGS: configure ( _run 'proj' '' 'cmake' '--build' build_dir '--parallel' ARGS )
+build *ARGS: configure ( _run 'proj' 'cmake' '--build' '.' '--parallel' ARGS )
 
 # configure project
-configure *ARGS: ( _run 'proj' '' 'cmake' '-B' build_dir '-S' '.' ARGS )
+configure *ARGS: ( _run 'proj' 'cmake' '-B' '.' '-S' '../proj' ARGS )
 
 # run 'tcenv' in specified stage
-run STAGE *ARGS: build ( _run ('stage' + STAGE) build_dir './tcenv' ARGS )
+run STAGE *ARGS: build ( _run ('stage' + STAGE) './tcenv' ARGS )
