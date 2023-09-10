@@ -19,18 +19,21 @@ add_executable(tcenv
         src/common.hpp
         src/download_util.hpp
         src/c_api.hpp
-        src/download_util.cpp)
+        src/download_util.cpp
+        src/patcher.cpp
+        src/patcher.hpp
+)
 
 target_link_options(tcenv PRIVATE
-#        "-static-libstdc++"
-#        "-static-libgcc"
-        "-static")
+        "-static"
+)
 
 target_link_libraries(tcenv
         Boost::headers
         Boost::filesystem
         Boost::url
         libssl::static
-        libarchive::static)
+        libarchive::static
+)
 
 install(TARGETS tcenv DESTINATION bin)
