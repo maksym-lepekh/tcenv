@@ -1,6 +1,7 @@
 #include "download_util.hpp"
 #include "c_api.hpp"
 #include "common.hpp"
+#include "log.hpp"
 
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
@@ -34,9 +35,9 @@ auto download_util::download(const std::string& url, const fs::path& dest)
     }
     auto dest_file = dest / fname;
 
-    log("host = ", host);
-    log("resource = ", resource);
-    log("dest_file = ", dest_file);
+    log::debug("host =", host);
+    log::debug("resource =", resource);
+    log::debug("dest_file =", dest_file);
 
     auto ioc = net::io_context{};
     auto ctx = net::ssl::context{net::ssl::context::tlsv12_client};

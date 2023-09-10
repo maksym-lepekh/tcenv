@@ -1,5 +1,6 @@
 #include "archive_util.hpp"
 #include "common.hpp"
+#include "log.hpp"
 #include "c_api.hpp"
 #include <archive.h>
 #include <archive_entry.h>
@@ -20,7 +21,7 @@ namespace
                 return r;
             auto ret = archive_write_data_block(aw, buff, size, offset);
             if (ret != ARCHIVE_OK) {
-                log("archive_write_data_block() ", archive_error_string(aw));
+                log::debug("archive_write_data_block()", archive_error_string(aw));
                 return ret;
             }
         }
@@ -29,8 +30,8 @@ namespace
 
 bool archive_util::extract(const fs::path& input, const fs::path& dest)
 {
-    log("input = ", input);
-    log("dest = ", dest);
+    log::debug("input = ", input);
+    log::debug("dest = ", dest);
 
     auto reader = c_api::opaque(archive_read_new, archive_read_free);
 
@@ -40,7 +41,7 @@ bool archive_util::extract(const fs::path& input, const fs::path& dest)
     auto ret = archive_read_open_filename(reader, input.c_str(), 10240);
     if (ret != 0)
     {
-        log("archive_read_open_filename() ", ret, " ", archive_error_string(reader));
+        log::info("archive_read_open_filename()", ret, archive_error_string(reader));
         return false;
     }
     AT_SCOPE_EXIT(archive_read_close(reader));
@@ -56,7 +57,7 @@ bool archive_util::extract(const fs::path& input, const fs::path& dest)
 
         if (ret != ARCHIVE_OK)
         {
-            log("archive_read_next_header() ", archive_error_string(reader));
+            log::info("archive_read_next_header()", archive_error_string(reader));
             return false;
         }
 
@@ -66,7 +67,7 @@ bool archive_util::extract(const fs::path& input, const fs::path& dest)
         ret = archive_write_header(writer, entry);
         if (ret != ARCHIVE_OK)
         {
-            log("archive_write_header() ", archive_error_string(writer));
+            log::info("archive_write_header()", archive_error_string(writer));
             return false;
         }
         else {
@@ -74,7 +75,7 @@ bool archive_util::extract(const fs::path& input, const fs::path& dest)
             ret = archive_write_finish_entry(writer);
             if (ret != ARCHIVE_OK)
             {
-                log("archive_write_finish_entry() ", archive_error_string(writer));
+                log::info("archive_write_finish_entry()", archive_error_string(writer));
                 return false;
             }
         }

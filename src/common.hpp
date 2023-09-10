@@ -8,13 +8,6 @@
 #include <functional>
 #include <iostream>
 
-template <typename... Args>
-void log(Args... args)
-{
-    std::cerr << "><><>< ";
-    ((std::cerr << args), ...);
-    std::cerr << "\n";
-}
 
 namespace common
 {

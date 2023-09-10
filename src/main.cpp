@@ -9,6 +9,7 @@
 #include "archive_util.hpp"
 #include "download_util.hpp"
 #include "common.hpp"
+#include "log.hpp"
 
 namespace fs = boost::filesystem;
 namespace proc = boost::process;
@@ -76,10 +77,10 @@ struct gnu_build_recipe : recipe
 
     [[nodiscard]] bool build(const proc::environment& env, fs::path build_dir, fs::path install_dir) const override
     {
-        log("Building ", package_name, " at ", build_dir, " into ", install_dir);
+        log::info("Building", package_name, "at", build_dir, "into", install_dir);
         if (store::is_success(install_dir))
         {
-            log("already built");
+            log::info("already built");
             return true;
         }
 
@@ -93,7 +94,7 @@ struct gnu_build_recipe : recipe
         auto ret = proc::system(proc::search_path("mkdir"), "-p", build_dir, proc::env = env);
         if (ret != 0)
         {
-            log("mkdir: non zero status ", ret);
+            log::info("mkdir: non zero status", ret);
             return false;
         }
 
@@ -102,7 +103,7 @@ struct gnu_build_recipe : recipe
             ret = proc::system(store::get_src_path(package_name) / "configure", "--prefix=" + install_dir.string(), proc::start_dir(build_dir), proc::args += configureArgs, proc::env = env, proc::env["FORCE_UNSAFE_CONFIGURE"] = "1");
             if (ret != 0)
             {
-                log("configure: non zero status ", ret);
+                log::info("configure: non zero status", ret);
                 return false;
             }
         }
@@ -111,13 +112,13 @@ struct gnu_build_recipe : recipe
         for (auto& a: makeArgsCopy)
         {
             replace_special(a, install_dir);
-            log("makeArg ", a);
+            log::info("makeArg", a);
         }
 
         ret = proc::system(proc::search_path("make"), "-j", "16", proc::args += makeArgsCopy, proc::start_dir(build_dir), proc::env = env);
         if (ret != 0)
         {
-            log("make all: non zero status ", ret);
+            log::info("make all: non zero status", ret);
             return false;
         }
 
@@ -126,7 +127,7 @@ struct gnu_build_recipe : recipe
             ret = proc::system(proc::search_path("make"), "install", proc::args += makeArgsCopy, proc::start_dir(build_dir), proc::env = env);
             if (ret != 0)
             {
-                log("make install: non zero status ", ret);
+                log::info("make install: non zero status", ret);
                 return false;
             }
         }
@@ -147,11 +148,11 @@ int main(int argc, char* argv[])
 {
     if (argc != 2)
     {
-        log("wrong args");
+        log::info("wrong args");
         return EXIT_FAILURE;
     }
 
-    log("libarchive: ", archive_version_string());
+    log::info("libarchive:", archive_version_string());
 
     auto coreutils = gnu_build_recipe{"coreutils-9.3"};
     coreutils.propagatedRelEnv.emplace_back("PATH", "bin");

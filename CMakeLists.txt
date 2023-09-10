@@ -22,6 +22,7 @@ add_executable(tcenv
         src/download_util.cpp
         src/patcher.cpp
         src/patcher.hpp
+        src/log.hpp
 )
 
 target_link_options(tcenv PRIVATE
