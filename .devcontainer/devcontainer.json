@@ -1,0 +1,10 @@
+{
+  "build": { "dockerfile": "../oci/Dockerfile.proj" },
+  "workspaceMount": "source=${localWorkspaceFolder},target=/proj,type=bind,consistency=cached",
+  "workspaceFolder": "/proj",
+  "securityOpt": ["label=disable"],
+  "runArgs": [
+    "-v tcenv-tcroot:/tcroot",
+    "-v tcenv-build:/proj/cmake-build-default",
+  ]
+}
