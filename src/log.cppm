@@ -1,15 +1,12 @@
-//
-// Created by maxl on 10.09.23.
-//
-
-#pragma once
-
+module;
 #include <iostream>
 #include <ctime>
 #include <array>
 #include <cassert>
 
-struct log
+export module log;
+
+export struct log
 {
     template <typename... Args>
     static void debug(Args... args)

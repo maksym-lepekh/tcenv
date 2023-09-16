@@ -1,9 +1,11 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.26)
 
 project(tcenv VERSION 0.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+#set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+set(CMAKE_EXPERIMENTAL_CXX_MODULE_CMAKE_API "2182bf5c-ef0d-489a-91da-49dbc3090d2a")
+set(CMAKE_EXPERIMENTAL_CXX_MODULE_DYNDEP 1)
 
 find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM)
@@ -20,15 +22,15 @@ tcenv_find_pkgconfig(libssl)
 
 add_executable(tcenv
         src/main.cpp
-        src/archive_util.hpp
-        src/archive_util.cpp
         src/common.hpp
-        src/download_util.hpp
-        src/c_api.hpp
-        src/download_util.cpp
-        src/patcher.cpp
-        src/patcher.hpp
-        src/log.hpp
+)
+
+target_sources(tcenv PRIVATE
+        FILE_SET cxx_modules TYPE CXX_MODULES FILES
+        src/download_util.cppm
+        src/log.cppm
+        src/c_api.cppm
+        src/archive_util.cppm
 )
 
 target_link_options(tcenv PRIVATE

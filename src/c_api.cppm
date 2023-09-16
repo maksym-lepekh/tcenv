@@ -1,14 +1,9 @@
-//
-// Created by mlepekh-ua on 8/29/23.
-//
-
-#ifndef TCENV_C_API_HPP
-#define TCENV_C_API_HPP
-
-
+module;
 #include <functional>
 
-namespace c_api
+export module c_api;
+
+export namespace c_api
 {
     template <typename T, typename Deleter>
     struct opaque
@@ -56,5 +51,3 @@ namespace c_api
     template <typename Alloc, typename Free>
     opaque(Alloc alloc_fn, Free free_fn) -> opaque<std::remove_pointer_t<std::invoke_result_t<Alloc>>, Free>;
 }
-
-#endif //TCENV_C_API_HPP

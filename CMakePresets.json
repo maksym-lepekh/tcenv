@@ -13,6 +13,9 @@
         "cacheVariables": {
           "CMAKE_CXX_COMPILER": "clang++",
           "CMAKE_BUILD_TYPE": "Debug"
+        },
+        "warnings": {
+          "dev": true
         }
       }
     ],

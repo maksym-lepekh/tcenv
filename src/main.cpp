@@ -5,16 +5,15 @@
 #include <boost/algorithm/string.hpp>
 #include <utility>
 #include <archive.h>
-
-#include "archive_util.hpp"
-#include "download_util.hpp"
 #include "common.hpp"
-#include "log.hpp"
+
+import download_util;
+import log;
+import archive_util;
 
 namespace fs = boost::filesystem;
 namespace proc = boost::process;
 using namespace std::literals;
-
 
 void replace_special(std::string& input, const fs::path& install_dir)
 {
