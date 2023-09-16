@@ -9,9 +9,10 @@ _default:
 _prep_volumes:
     @{{oci_tool}} volume create {{oci_volume_args}} tcenv-tcroot > /dev/null
     @{{oci_tool}} volume create {{oci_volume_args}} tcenv-build > /dev/null
+    @{{oci_tool}} volume create {{oci_volume_args}} tcenv-ccache > /dev/null
 
 _run IMAGE *ARGS: ( build-image IMAGE ) _prep_volumes
-    {{oci_tool}} run --rm -it {{oci_run_args}} -v tcenv-tcroot:/tcroot -v `pwd`:/proj -v tcenv-build:/proj/{{build_dir}} -w /proj tcenv:{{IMAGE}} {{ARGS}}
+    {{oci_tool}} run --rm -it {{oci_run_args}} -v tcenv-ccache:/root/.cache -v tcenv-tcroot:/tcroot -v `pwd`:/proj -v tcenv-build:/proj/{{build_dir}} -w /proj tcenv:{{IMAGE}} {{ARGS}}
 
 # build container image
 build-image IMAGE='proj':
