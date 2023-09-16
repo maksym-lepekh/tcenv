@@ -4,7 +4,7 @@
   "workspaceFolder": "/proj",
   "securityOpt": ["label=disable"],
   "runArgs": [
-    "-v tcenv-tcroot:/tcroot",
-    "-v tcenv-build:/proj/cmake-build-default",
+    "-v", "tcenv-tcroot:/tcroot",
+    "-v", "tcenv-build:/proj/cmake-build-default"
   ]
 }

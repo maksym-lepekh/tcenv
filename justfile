@@ -15,7 +15,7 @@ _run IMAGE *ARGS: ( build-image IMAGE ) _prep_volumes
 
 # build container image
 build-image IMAGE='proj':
-    {{oci_tool}} build -f oci/Dockerfile.{{IMAGE}} -t tcenv:{{IMAGE}} docker
+    {{oci_tool}} build -f oci/Dockerfile.{{IMAGE}} -t tcenv:{{IMAGE}} oci
 
 # enter default shell of container
 shell IMAGE='proj': ( _run IMAGE )
