@@ -28,11 +28,11 @@ dive IMAGE='proj': ( build-image IMAGE )
 # browse files in container
 lf IMAGE='proj': ( _run IMAGE 'lf' )
 
-# build project
+# build project. ARGS are passed to cmake, i.e. --target XXX
 build *ARGS: configure ( _run 'proj' 'cmake --build --preset=default' ARGS )
 
-# configure project
+# configure project. ARGS are passed to cmake, i.e. --fresh
 configure *ARGS: ( _run 'proj' 'cmake --preset=default' ARGS )
 
-# run 'tcenv' in specified stage
+# run 'tcenv' in specified stage. Example: just run 0 test
 run STAGE *ARGS: build ( _run ('stage' + STAGE) (build_dir + '/tcenv') ARGS )

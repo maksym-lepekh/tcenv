@@ -8,7 +8,7 @@ RUN apk add --no-cache make
 # boost deps
 RUN apk add --no-cache linux-headers
 
-# libboost
+# libboost, need to build with clang and libc++
 RUN wget https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/boost_1_82_0.tar.bz2 \
     && tar --bzip2 -xf boost_1_82_0.tar.bz2 \
     && cd boost_1_82_0/ \
@@ -27,7 +27,7 @@ RUN wget https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/boost_
       install \
     && cd .. && rm -rf boost_1_82_0*
 
-# liblz4
+# liblz4, need to build with clang
 RUN wget https://github.com/lz4/lz4/releases/download/v1.9.4/lz4-1.9.4.tar.gz \
     && tar xzf lz4-1.9.4.tar.gz \
     && cd lz4-1.9.4/ \
