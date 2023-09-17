@@ -44,12 +44,12 @@ namespace store
 
     void set_success(const fs::path& install_dir)
     {
-        std::ofstream output(install_dir / succ_file);
+        std::ofstream output((install_dir / succ_file).c_str());
     }
 
     bool is_success(const fs::path& install_dir)
     {
-        return std::ifstream(install_dir / succ_file).good();
+        return std::ifstream((install_dir / succ_file).c_str()).good();
     }
 }
 

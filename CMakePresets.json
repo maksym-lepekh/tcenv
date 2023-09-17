@@ -11,7 +11,7 @@
         "binaryDir": "${sourceDir}/cmake-build-${presetName}",
         "generator": "Ninja",
         "cacheVariables": {
-          "CMAKE_CXX_COMPILER": "g++",
+          "CMAKE_CXX_COMPILER": "clang++",
           "CMAKE_BUILD_TYPE": "Debug"
         }
       }

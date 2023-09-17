@@ -32,7 +32,17 @@ add_executable(tcenv
 
 target_link_options(tcenv PRIVATE
         "-static"
+        "-stdlib=libc++"
 )
+
+target_compile_options(tcenv PRIVATE
+        "-stdlib=libc++"
+)
+
+# let clang using new libstdc++ functionality
+target_compile_definitions(tcenv PRIVATE "__cpp_concepts=202002")
+target_compile_options(tcenv PRIVATE "-Wno-macro-redefined")
+
 
 target_link_libraries(tcenv
         Boost::headers
@@ -40,6 +50,7 @@ target_link_libraries(tcenv
         Boost::url
         libssl::static
         libarchive::static
+        c++abi
 )
 
 install(TARGETS tcenv DESTINATION bin)
