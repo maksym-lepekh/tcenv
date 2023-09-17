@@ -1,10 +1,29 @@
 {
-  "build": { "dockerfile": "../oci/Dockerfile.proj" },
+  "build": {
+    "dockerfile": "../oci/Dockerfile.proj"
+  },
   "workspaceMount": "source=${localWorkspaceFolder},target=/proj,type=bind,consistency=cached",
   "workspaceFolder": "/proj",
-  "securityOpt": ["label=disable"],
+  "securityOpt": [
+    "label=disable"
+  ],
   "runArgs": [
-    "-v", "tcenv-tcroot:/tcroot",
-    "-v", "tcenv-build:/proj/cmake-build-default"
-  ]
+    "-v",
+    "tcenv-tcroot:/tcroot",
+    "-v",
+    "tcenv-build:/proj/cmake-build-default",
+    "-v",
+    "tcenv-ccache:/root/.cache",
+    "-v",
+    "ide-clangd:/proj/.clangd"
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cmake-tools",
+        "twxs.cmake",
+        "llvm-vs-code-extensions.vscode-clangd"
+      ]
+    }
+  }
 }
