@@ -1,19 +1,46 @@
 FROM docker.io/library/alpine:3.18@sha256:7144f7bab3d4c2648d7e59409f15ec52a18006a128c733fcff20d3a4a54ba44a
 
-RUN apk add --no-cache g++ gdb
-RUN apk add --no-cache cmake pkgconf ninja-build ninja-is-really-ninja lf make
-RUN apk add --no-cache llvm16 clang16
-RUN apk add --no-cache boost1.82-dev boost1.82-static
-RUN apk add --no-cache libarchive-dev libarchive-static acl-static zlib-static xz-static bzip2-static expat-static zstd-static
-RUN apk add --no-cache openssl-dev openssl-libs-static
-RUN apk add --no-cache ccache
+RUN apk add --no-cache cmake pkgconf ninja-build ninja-is-really-ninja lf make ccache
+
 RUN mkdir -p /src \
     && cd /src/ \
+    && wget https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/boost_1_82_0.tar.bz2 \
+    && tar --bzip2 -xf boost_1_82_0.tar.bz2
+
+RUN cd /src/ \
     && wget https://github.com/lz4/lz4/releases/download/v1.9.4/lz4-1.9.4.tar.gz \
-    && tar xzf lz4-1.9.4.tar.gz \
-    && cd lz4-1.9.4/ \
-    && CC=clang make VERBOSE=1 \
-    && CC=clang make install VERBOSE=1 \
-    && cd \
-    && rm -rf /src
-RUN apk add --no-cache libc++ libc++-dev libc++-static compiler-rt
+    && tar xzf lz4-1.9.4.tar.gz
+
+# toolchain
+RUN apk add --no-cache llvm16 clang16 clang16-extra-tools
+RUN apk add --no-cache libc++ libc++-dev libc++-static compiler-rt musl-dev
+
+# project deps: libarchive, openssl
+RUN apk add --no-cache libarchive-dev libarchive-static acl-static zlib-static xz-static bzip2-static expat-static zstd-static
+RUN apk add --no-cache openssl-dev openssl-libs-static
+
+# boost dep
+RUN apk add --no-cache linux-headers
+
+# liblz4
+RUN cd /src/lz4-1.9.4/ \
+    && CC=clang make \
+    && CC=clang make install
+
+# libboost
+RUN cd /src/boost_1_82_0/ \
+    && ./bootstrap.sh --with-toolset=clang --without-icu \
+    && ./b2 \
+      toolset=clang \
+      cxxflags="-std=c++2b -stdlib=libc++" \
+      linkflags="-stdlib=libc++ -lc++abi" \
+      variant=release \
+      debug-symbols=off \
+      threading=multi \
+      runtime-link=static \
+      link=static \
+      --with-filesystem \
+      --with-url \
+      install
+
+RUN rm -rf /src

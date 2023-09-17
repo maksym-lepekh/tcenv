@@ -12,6 +12,7 @@ endif()
 
 include(cmake/tcenv.cmake)
 
+set(Boost_USE_STATIC_RUNTIME ON)
 set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost 1.70 REQUIRED COMPONENTS filesystem url)
 tcenv_find_pkgconfig(libarchive)
