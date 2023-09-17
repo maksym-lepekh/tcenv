@@ -3,9 +3,10 @@ cmake_minimum_required(VERSION 3.26)
 project(tcenv VERSION 0.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD 23)
-#set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 set(CMAKE_EXPERIMENTAL_CXX_MODULE_CMAKE_API "2182bf5c-ef0d-489a-91da-49dbc3090d2a")
 set(CMAKE_EXPERIMENTAL_CXX_MODULE_DYNDEP 1)
+
 
 find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM)
@@ -35,17 +36,7 @@ target_sources(tcenv PRIVATE
 
 target_link_options(tcenv PRIVATE
         "-static"
-        "-stdlib=libc++"
 )
-
-target_compile_options(tcenv PRIVATE
-        "-stdlib=libc++"
-)
-
-# let clang using new libstdc++ functionality
-target_compile_definitions(tcenv PRIVATE "__cpp_concepts=202002")
-target_compile_options(tcenv PRIVATE "-Wno-macro-redefined")
-
 
 target_link_libraries(tcenv
         Boost::headers
@@ -53,7 +44,11 @@ target_link_libraries(tcenv
         Boost::url
         libssl::static
         libarchive::static
-        c++abi
 )
+
+# use libc++
+target_link_options(tcenv PRIVATE "-stdlib=libc++")
+target_compile_options(tcenv PRIVATE "-stdlib=libc++")
+target_link_libraries(tcenv c++abi)
 
 install(TARGETS tcenv DESTINATION bin)
