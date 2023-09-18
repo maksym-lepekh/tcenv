@@ -1,4 +1,8 @@
 module;
+// there is a strange bug in order of includes that causes double symbols in module unit
+// clang format off
+#include <boost/filesystem.hpp>
+// clang format on
 #include <boost/asio/connect.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ssl/error.hpp>
@@ -8,7 +12,6 @@ module;
 #include <boost/beast/http.hpp>
 #include <boost/beast/ssl.hpp>
 #include <boost/beast/version.hpp>
-#include <boost/filesystem.hpp>
 #include <boost/url.hpp>
 #include <expected>
 #include <openssl/ssl.h>
