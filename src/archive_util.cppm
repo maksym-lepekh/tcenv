@@ -4,6 +4,7 @@ module;
 #include <archive.h>
 #include <archive_entry.h>
 #include <boost/filesystem.hpp>
+#include <gsl/pointers>
 
 namespace fs = boost::filesystem;
 
@@ -13,7 +14,7 @@ import c_api;
 
 namespace
 {
-    int copy_data(archive* ar, archive* aw)
+    int copy_data(gsl::not_null<archive*> ar, gsl::not_null<archive*> aw)
     {
         for (;;)
         {
