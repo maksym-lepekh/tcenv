@@ -7,21 +7,24 @@
 
 #include <functional>
 
-
 namespace common
 {
     struct scope_end_sentinel
     {
         std::function<void()> job;
+
         ~scope_end_sentinel()
         {
-            if (job) job();
+            if (job)
+            {
+                job();
+            }
         }
     };
-}
+}    // namespace common
 
 #define TCENV_STRING_CAT(a, b) a##b
 #define TCENV_MAKE_VAR_NAME(L) TCENV_STRING_CAT(tcenv_exit_, L)
-#define AT_SCOPE_EXIT(X) auto TCENV_MAKE_VAR_NAME(__LINE__) = common::scope_end_sentinel([&](){X;})
+#define AT_SCOPE_EXIT(X)       auto TCENV_MAKE_VAR_NAME(__LINE__) = common::scope_end_sentinel([&]() { X; })
 
-#endif //TCENV_COMMON_HPP
+#endif    // TCENV_COMMON_HPP

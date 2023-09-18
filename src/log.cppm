@@ -1,8 +1,8 @@
 module;
-#include <iostream>
-#include <ctime>
 #include <array>
 #include <cassert>
+#include <ctime>
+#include <iostream>
 
 export module log;
 
@@ -40,10 +40,10 @@ private:
     template <typename... Args>
     static void impl(const char* lvl, Args... args)
     {
-        auto now = std::time(nullptr);
+        auto now       = std::time(nullptr);
         auto local_now = std::localtime(&now);
-        auto buf = std::array<char, 256>{};
-        auto written = std::strftime(buf.data(), buf.size(), "%F %T", local_now);
+        auto buf       = std::array<char, 256>{};
+        auto written   = std::strftime(buf.data(), buf.size(), "%F %T", local_now);
         assert(written != 0);
         assert(written < 256);
 

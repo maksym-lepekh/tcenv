@@ -10,7 +10,7 @@ export namespace c_api
     {
         opaque(auto alloc_fn, auto free_fn)
         {
-            value = alloc_fn();
+            value   = alloc_fn();
             deleter = free_fn;
         }
 
@@ -23,8 +23,8 @@ export namespace c_api
 
         opaque(opaque&& other) noexcept
         {
-            value = other.value;
-            deleter = other.deleter;
+            value         = other.value;
+            deleter       = other.deleter;
             other.deleter = nullptr;
         }
 
@@ -50,4 +50,4 @@ export namespace c_api
 
     template <typename Alloc, typename Free>
     opaque(Alloc alloc_fn, Free free_fn) -> opaque<std::remove_pointer_t<std::invoke_result_t<Alloc>>, Free>;
-}
+}    // namespace c_api
