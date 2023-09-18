@@ -36,7 +36,7 @@ RUN wget https://github.com/lz4/lz4/releases/download/v1.9.4/lz4-1.9.4.tar.gz \
     && cd .. && rm -rf lz4-1.9.4*
 
 # project tools
-RUN apk add --no-cache cmake pkgconf ninja-build ninja-is-really-ninja lf ccache
+RUN apk add --no-cache cmake pkgconf ninja-build ninja-is-really-ninja lf ccache git
 
 # project deps: libarchive, openssl
 RUN apk add --no-cache libarchive-dev libarchive-static acl-static zlib-static xz-static bzip2-static expat-static zstd-static

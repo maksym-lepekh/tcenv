@@ -1,9 +1,10 @@
 module;
-#include "common.hpp"
+#include "finally.hpp"
 
 #include <archive.h>
 #include <archive_entry.h>
 #include <boost/filesystem.hpp>
+
 namespace fs = boost::filesystem;
 
 export module archive_util;
@@ -57,7 +58,7 @@ namespace archive_util
             log::info("archive_read_open_filename()", ret, archive_error_string(reader));
             return false;
         }
-        AT_SCOPE_EXIT(archive_read_close(reader));
+        FINALLY(archive_read_close(reader));
 
         auto writer = c_api::opaque(archive_write_disk_new, archive_write_free);
 
