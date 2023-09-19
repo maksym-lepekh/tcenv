@@ -17,6 +17,9 @@ _run IMAGE *ARGS: ( build-image IMAGE ) _prep_volumes
 _tidy_impl:
     @find src -regex '.*\.\(cpp\|hpp\|cppm\)' -print -exec clang-tidy -p {{build_dir}} {} \;
 
+_format_impl:
+    @find src -regex '.*\.\(cpp\|hpp\|cppm\)' -print -exec clang-format --dry-run {} \;
+
 # build container image
 build-image IMAGE='proj':
     {{oci_tool}} build -f oci/Dockerfile.{{IMAGE}} -t tcenv:{{IMAGE}} oci
@@ -40,4 +43,8 @@ configure *ARGS: ( _run 'proj' 'cmake --preset=default' ARGS )
 # run 'tcenv' in specified stage. Example: just run 0 test
 run STAGE *ARGS: build ( _run ('stage' + STAGE) (build_dir + '/tcenv') ARGS )
 
-tidy: ( _run 'proj' 'just _tidy_impl' )
+# run 'clang-tidy' and print warnings
+check-tidy: ( _run 'proj' 'just _tidy_impl' )
+
+# run 'clang-format' and print warnings
+check-format: ( _run 'proj' 'just _format_impl' )
