@@ -14,6 +14,9 @@ _prep_volumes:
 _run IMAGE *ARGS: ( build-image IMAGE ) _prep_volumes
     {{oci_tool}} run --rm -it {{oci_run_args}} -v tcenv-ccache:/root/.cache -v tcenv-tcroot:/tcroot -v `pwd`:/proj -v tcenv-build:/proj/{{build_dir}} -w /proj tcenv:{{IMAGE}} {{ARGS}}
 
+_tidy_impl:
+    @find src -regex '.*\.\(cpp\|hpp\|cppm\)' -print -exec clang-tidy -p {{build_dir}} {} \;
+
 # build container image
 build-image IMAGE='proj':
     {{oci_tool}} build -f oci/Dockerfile.{{IMAGE}} -t tcenv:{{IMAGE}} oci
@@ -36,3 +39,5 @@ configure *ARGS: ( _run 'proj' 'cmake --preset=default' ARGS )
 
 # run 'tcenv' in specified stage. Example: just run 0 test
 run STAGE *ARGS: build ( _run ('stage' + STAGE) (build_dir + '/tcenv') ARGS )
+
+tidy: ( _run 'proj' 'just _tidy_impl' )
