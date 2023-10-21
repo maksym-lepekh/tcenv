@@ -1,0 +1,8 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="ClangTidy" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="clangTidyChecks" value="-*,bugprone-*,clang-analyzer-*,cppcoreguidelines-*,modernize-*,performance-*,readability-*,misc-unconventional-assign-operator,misc-misplaced-const,misc-new-delete-overloads,misc-non-copyable-objects,misc-no-recursion,misc-throw-by-value-catch-by-reference,misc-uniqueptr-reset-release,openmp-use-default-none,portability-simd-intrinsics" />
+    </inspection_tool>
+  </profile>
+</component>

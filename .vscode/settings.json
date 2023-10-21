@@ -1,0 +1,12 @@
+{
+	"clangd.arguments": [
+		"--compile-commands-dir=.clangd",
+		"--background-index=true",
+		"--all-scopes-completion=true"
+	],
+	"cmake.allowUnsupportedPresetsVersions": true,
+	"cmake.copyCompileCommands": "${workspaceRoot}/.clangd/compile_commands.json",
+	"files.associations": {
+		"*.cppm": "cpp"
+	}
+}

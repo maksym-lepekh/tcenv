@@ -1,0 +1,12 @@
+FROM bitnami/minideb:latest
+
+RUN install_packages g++
+RUN install_packages make
+
+# for glibc
+RUN install_packages bison
+RUN install_packages python3
+RUN install_packages gawk
+
+# for linux-headers
+RUN install_packages rsync
