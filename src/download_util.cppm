@@ -31,16 +31,16 @@ namespace download_util
         auto parsed_url = boost::urls::parse_uri(url);
         auto host       = std::string(parsed_url->encoded_host());
         auto resource   = std::string(parsed_url->encoded_resource());
-        auto fname      = std::string(parsed_url->encoded_path());
-        if (fname.empty())
+        auto file_name  = std::string(parsed_url->encoded_path());
+        if (file_name.empty())
         {
-            fname = "file";
+            file_name = "file";
         }
-        if (fname.contains('/'))
+        if (file_name.contains('/'))
         {
-            fname = fname.substr(fname.find_last_of('/'));
+            file_name = file_name.substr(file_name.find_last_of('/'));
         }
-        auto dest_file = dest / fname;
+        auto dest_file = dest / file_name;
 
         log::debug("host =", host);
         log::debug("resource =", resource);
@@ -54,7 +54,7 @@ namespace download_util
 
         stream.set_verify_mode(net::ssl::verify_none);
         stream.set_verify_callback(
-            [](bool preverified, net::ssl::verify_context& ctx)
+            [](bool pre_verified, net::ssl::verify_context& ctx)
             {
                 return true;    // Accept any certificate
             });

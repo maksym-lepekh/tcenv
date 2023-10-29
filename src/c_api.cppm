@@ -13,7 +13,6 @@ export namespace c_api
             value   = alloc_fn();
             deleter = free_fn;
         }
-
         opaque(auto alloc_fn, auto free_fn, auto init_fn, auto... init_args)
         {
             value = alloc_fn();

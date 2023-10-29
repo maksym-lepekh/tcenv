@@ -1,7 +1,3 @@
-//
-// Created by maxl on 11.08.23.
-//
-
 #ifndef TCENV_FINALLY_HPP
 #define TCENV_FINALLY_HPP
 

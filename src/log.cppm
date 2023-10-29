@@ -29,7 +29,7 @@ export struct log
     }
 
 private:
-    static log& instance()
+    static auto instance() -> log&
     {
         static log inst;
         return inst;
