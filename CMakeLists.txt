@@ -33,6 +33,7 @@ tcenv_find_pkgconfig(libssl)
 add_executable(tcenv
         src/main.cpp
         src/finally.hpp
+        src/clangd_fixer.hpp
 )
 
 target_sources(tcenv PRIVATE

@@ -3,14 +3,14 @@ module;
 
 #include <archive.h>
 #include <archive_entry.h>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <gsl/pointers>
-
-namespace fs = boost::filesystem;
 
 export module archive_util;
 import log;
 import c_api;
+
+namespace fs = std::filesystem;
 
 namespace
 {

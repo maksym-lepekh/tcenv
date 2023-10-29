@@ -1,8 +1,6 @@
 module;
-// there is a strange bug in order of includes that causes double symbols in module unit
-// clang format off
-#include <boost/filesystem.hpp>
-// clang format on
+#include "clangd_fixer.hpp"
+
 #include <boost/asio/connect.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ssl/error.hpp>
@@ -14,15 +12,16 @@ module;
 #include <boost/beast/version.hpp>
 #include <boost/url.hpp>
 #include <expected>
+#include <filesystem>
 #include <openssl/ssl.h>
+
+export module download_util;
+import log;
 
 namespace net   = boost::asio;
 namespace beast = boost::beast;
 namespace http  = beast::http;
-namespace fs    = boost::filesystem;
-
-export module download_util;
-import log;
+namespace fs    = std::filesystem;
 
 namespace download_util
 {

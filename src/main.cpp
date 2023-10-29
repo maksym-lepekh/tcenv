@@ -1,20 +1,22 @@
-#include "finally.hpp"
+#include "clangd_fixer.hpp"
 
 #include <archive.h>
 #include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
 #include <boost/process.hpp>
 #include <fstream>
+#include <iostream>
 #include <string>
+#include <unordered_map>
 #include <utility>
 
-import download_util;
 import log;
+import download_util;
 import archive_util;
 
-namespace fs   = boost::filesystem;
+namespace fs   = std::filesystem;
 namespace proc = boost::process;
 using namespace std::literals;
+FIX_CLANGD_MODULES;
 
 void replace_special(std::string& input, const fs::path& install_dir)
 {
@@ -92,7 +94,7 @@ struct gnu_build_recipe: recipe
 
         proc::system(proc::search_path("env"), proc::env = env);
 
-        auto ret = proc::system(proc::search_path("mkdir"), "-p", build_dir, proc::env = env);
+        auto ret = proc::system(proc::search_path("mkdir"), "-p", build_dir.c_str(), proc::env = env);
         if (ret != 0)
         {
             log::info("mkdir: non zero status", ret);
@@ -101,9 +103,9 @@ struct gnu_build_recipe: recipe
 
         if (doConfigure)
         {
-            ret = proc::system(store::get_src_path(package_name) / "configure", "--prefix=" + install_dir.string(),
-                               proc::start_dir(build_dir), proc::args += configureArgs, proc::env = env,
-                               proc::env["FORCE_UNSAFE_CONFIGURE"] = "1");
+            ret = proc::system((store::get_src_path(package_name) / "configure").c_str(),
+                               "--prefix="s + install_dir.c_str(), proc::start_dir(build_dir.c_str()),
+                               proc::args += configureArgs, proc::env = env, proc::env["FORCE_UNSAFE_CONFIGURE"] = "1");
             if (ret != 0)
             {
                 log::info("configure: non zero status", ret);
@@ -119,7 +121,7 @@ struct gnu_build_recipe: recipe
         }
 
         ret = proc::system(proc::search_path("make"), "-j", "16", proc::args += makeArgsCopy,
-                           proc::start_dir(build_dir), proc::env = env);
+                           proc::start_dir(build_dir.c_str()), proc::env = env);
         if (ret != 0)
         {
             log::info("make all: non zero status", ret);
@@ -129,7 +131,7 @@ struct gnu_build_recipe: recipe
         if (doMakeInstall)
         {
             ret = proc::system(proc::search_path("make"), "install", proc::args += makeArgsCopy,
-                               proc::start_dir(build_dir), proc::env = env);
+                               proc::start_dir(build_dir.c_str()), proc::env = env);
             if (ret != 0)
             {
                 log::info("make install: non zero status", ret);
@@ -208,7 +210,7 @@ int main(int argc, char* argv[])
 
     auto build_list = gnu_toolchain;
 
-    if (argv[1] == "s1"s)
+    if (argv[1] == "s1"sv)
     {
         build_env["PATH"].clear();
         for (auto& p: gnu_toolchain)
@@ -220,7 +222,7 @@ int main(int argc, char* argv[])
         build_list = std::vector<recipe*>{&coreutils, &sed, &grep, &make, &gawk, &glibc, &binutils, &gcc};
     }
 
-    if (argv[1] == "test"s)
+    if (argv[1] == "test"sv)
     {
         auto dest_dir = store::get_src_path("dummy");
         fs::create_directories(dest_dir);
