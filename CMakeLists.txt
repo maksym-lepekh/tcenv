@@ -18,7 +18,16 @@ FetchContent_Declare(GSL
         GIT_TAG "v4.0.0"
         GIT_SHALLOW ON
 )
+
+# toml++
+FetchContent_Declare(
+        tomlplusplus
+        GIT_REPOSITORY https://github.com/marzer/tomlplusplus.git
+        GIT_TAG v3.4.0
+)
+
 FetchContent_MakeAvailable(GSL)
+FetchContent_MakeAvailable(tomlplusplus)
 
 # boost
 set(Boost_USE_STATIC_RUNTIME ON)
@@ -55,6 +64,7 @@ target_link_libraries(tcenv
         libssl::static
         libarchive::static
         Microsoft.GSL::GSL
+        tomlplusplus::tomlplusplus
 )
 
 # use libc++
