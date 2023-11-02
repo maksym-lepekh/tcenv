@@ -1,5 +1,4 @@
 module;
-#include "clangd_fixer.hpp"
 
 #include <boost/asio/connect.hpp>
 #include <boost/asio/ip/tcp.hpp>
@@ -67,9 +66,10 @@ namespace download_util
         }
 
         // Connect to the HTTPS server
+        constexpr auto connect_timeout = std::chrono::seconds(30);
         auto resolver = net::ip::tcp::resolver{ioc};
         get_lowest_layer(stream).connect(resolver.resolve({host, "443"}));
-        get_lowest_layer(stream).expires_after(std::chrono::seconds(30));
+        get_lowest_layer(stream).expires_after(connect_timeout);
 
         // Construct request
         auto req = http::request<http::empty_body>{http::verb::get, resource, 11};

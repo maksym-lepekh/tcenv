@@ -40,10 +40,11 @@ private:
     template <typename... Args>
     static void impl(const char* lvl, Args... args)
     {
-        auto now       = std::time(nullptr);
-        auto local_now = std::localtime(&now);
-        auto buf       = std::array<char, 256>{};
-        auto written   = std::strftime(buf.data(), buf.size(), "%F %T", local_now);
+        constexpr auto max_date_str = 256;
+        auto now                    = std::time(nullptr);
+        auto* local_now             = std::localtime(&now);
+        auto buf                    = std::array<char, max_date_str>{};
+        auto written                = std::strftime(buf.data(), buf.size(), "%F %T", local_now);
         assert(written != 0);
         assert(written < 256);
 

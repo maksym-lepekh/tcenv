@@ -14,7 +14,7 @@ namespace fs = std::filesystem;
 
 namespace
 {
-    int copy_data(gsl::not_null<archive*> ar, gsl::not_null<archive*> aw)
+    auto copy_data(gsl::not_null<archive*> ar, gsl::not_null<archive*> aw) -> int
     {
         for (;;)
         {
@@ -53,7 +53,8 @@ namespace archive_util
         archive_read_support_format_all(reader);
         archive_read_support_filter_all(reader);
 
-        auto ret = archive_read_open_filename(reader, input.c_str(), 10'240);
+        constexpr auto chunk_size = 10'240;
+        auto ret                  = archive_read_open_filename(reader, input.c_str(), chunk_size);
         if (ret != 0)
         {
             log::info("archive_read_open_filename()", ret, archive_error_string(reader));
@@ -87,15 +88,13 @@ namespace archive_util
                 log::info("archive_write_header()", archive_error_string(writer));
                 return false;
             }
-            else
+
+            copy_data(reader, writer);
+            ret = archive_write_finish_entry(writer);
+            if (ret != ARCHIVE_OK)
             {
-                copy_data(reader, writer);
-                ret = archive_write_finish_entry(writer);
-                if (ret != ARCHIVE_OK)
-                {
-                    log::info("archive_write_finish_entry()", archive_error_string(writer));
-                    return false;
-                }
+                log::info("archive_write_finish_entry()", archive_error_string(writer));
+                return false;
             }
         }
 

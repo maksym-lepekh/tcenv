@@ -6,7 +6,6 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <unordered_map>
 #include <utility>
 
 import log;
@@ -16,7 +15,7 @@ import archive_util;
 namespace fs   = std::filesystem;
 namespace proc = boost::process;
 using namespace std::literals;
-FIX_CLANGD_MODULES;
+FIX_CLANGD_MODULES
 
 void replace_special(std::string& input, const fs::path& install_dir)
 {
@@ -49,7 +48,7 @@ namespace store
         std::ofstream output((install_dir / succ_file).c_str());
     }
 
-    bool is_success(const fs::path& install_dir)
+    auto is_success(const fs::path& install_dir) -> bool
     {
         return std::ifstream((install_dir / succ_file).c_str()).good();
     }
@@ -152,7 +151,7 @@ struct gnu_build_recipe: recipe
     }
 };
 
-int main(int argc, char* argv[])
+auto main(int argc, char* argv[]) -> int
 {
     if (argc != 2)
     {
