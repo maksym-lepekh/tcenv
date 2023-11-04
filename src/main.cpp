@@ -36,9 +36,9 @@ auto main(int argc, char* argv[]) -> int
             logger::info("Found recipe for", pkg);
             recipe_builder::print_recipe(*r);
             auto res = recipe_builder::build(*r, b_env);
-            logger::info("Build result is", res);
             if (!res)
             {
+                logger::error(res.error());
                 return EXIT_FAILURE;
             }
         }

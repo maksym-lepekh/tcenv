@@ -41,7 +41,7 @@ tcenv_find_pkgconfig(libssl)
 
 add_executable(tcenv
         src/main.cpp
-        src/finally.hpp
+        src/control_flow.hpp
         src/clangd_fixer.hpp
 )
 
@@ -53,6 +53,8 @@ target_sources(tcenv PRIVATE
         src/archive_util.cppm
         src/recipe.cppm
         src/recipe_repo.cppm
+        src/error.cppm
+        src/type_seq.cppm
 )
 
 target_link_options(tcenv PRIVATE

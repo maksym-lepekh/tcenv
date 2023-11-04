@@ -16,16 +16,25 @@ module;
 
 export module download_util;
 import logger;
+import error;
 
+using namespace std::literals;
 namespace net   = boost::asio;
 namespace beast = boost::beast;
 namespace http  = beast::http;
 namespace fs    = std::filesystem;
 
+namespace
+{
+    auto to_msg(boost::beast::error_code ec) -> std::string
+    {
+        return ec.category().name() + ":"s + ec.message();
+    }
+}    // namespace
+
 namespace download_util
 {
-    export auto download(const std::string& url, const fs::path& dest)
-        -> std::expected<fs::path, boost::beast::error_code>
+    export auto download(const std::string& url, const fs::path& dest) -> result<fs::path>
     {
         auto parsed_url = boost::urls::parse_uri(url);
         auto host       = std::string(parsed_url->encoded_host());
@@ -62,7 +71,7 @@ namespace download_util
         if (!SSL_set_tlsext_host_name(stream.native_handle(), host.data()))
         {
             beast::error_code ec{static_cast<int>(::ERR_get_error()), net::error::get_ssl_category()};
-            throw beast::system_error{ec};
+            return std::unexpected(error_t{to_msg(ec)});
         }
 
         // Connect to the HTTPS server
@@ -87,7 +96,7 @@ namespace download_util
         res.body().open(dest_file.c_str(), beast::file_mode::write, ec);
         if (ec)
         {
-            throw beast::system_error{ec};
+            return std::unexpected(error_t{to_msg(ec)});
         }
 
         http::read(stream, buffer, res);
@@ -100,7 +109,7 @@ namespace download_util
         }
         if (ec)
         {
-            throw beast::system_error{ec};
+            return std::unexpected(error_t{to_msg(ec)});
         }
 
         return dest_file;

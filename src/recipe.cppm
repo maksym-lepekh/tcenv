@@ -1,5 +1,6 @@
 module;
 #include "clangd_fixer.hpp"
+#include "control_flow.hpp"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/process.hpp>
@@ -13,6 +14,7 @@ module;
 export module recipe;
 import download_util;
 import archive_util;
+import error;
 import logger;
 FIX_CLANGD_MODULES;
 
@@ -32,8 +34,7 @@ export struct recipe
         boost::process::environment variables;
     };
 
-    using build_res_t   = std::expected<void, std::error_code>;
-    using build_step_fn = std::function<build_res_t(const build_env&)>;
+    using build_step_fn = std::function<result<void>(const build_env&)>;
 
     std::vector<build_step_fn> build_steps = {};
     std::vector<std::string> hash_data;
@@ -44,22 +45,18 @@ namespace recipe_builder
     namespace fs   = std::filesystem;
     namespace proc = boost::process;
 
-    auto download_step(const recipe::build_env& env, const std::string& url) -> recipe::build_res_t
+    auto download_step(const recipe::build_env& env, const std::string& url) -> result<void>
     {
         fs::create_directories(env.source_dir);
         logger::info("Created dir:", env.source_dir);
         auto downloaded = download_util::download(url, env.source_dir);
-        logger::info("Downloaded:", downloaded.value_or("ERROR"));
         if (downloaded)
         {
-            if (archive_util::extract(downloaded.value(), env.source_dir))
-            {
-                logger::info("Extracted successfully");
-                return {};
-            }
+            logger::info("Downloaded:", downloaded.value());
+            TRY(archive_util::extract(downloaded.value(), env.source_dir));
+            return {};
         }
-
-        return std::unexpected(std::make_error_code(std::errc::io_error));
+        return std::unexpected(downloaded.error());
     }
 
     void replace_special(std::string& input, const fs::path& install_dir)
@@ -105,7 +102,7 @@ namespace recipe_builder
 
         auto extr_dir = r.package_name + "-" + r.package_version;
         r.build_steps.emplace_back(
-            [configureArgs = std::move(configureArgs), extr_dir](const recipe::build_env& env) -> recipe::build_res_t
+            [configureArgs = std::move(configureArgs), extr_dir](const recipe::build_env& env) -> result<void>
             {
                 auto c_file                     = env.source_dir / extr_dir / "configure";
                 auto c_env                      = env.variables;
@@ -115,14 +112,14 @@ namespace recipe_builder
 
                 if (!run_child_proc(env.build_dir, c_env, c_file.string(), c_args))
                 {
-                    return std::unexpected(std::make_error_code(std::errc::io_error));
+                    return std::unexpected(error_t{"Process failed"});
                 }
 
                 return {};
             });
 
         r.build_steps.emplace_back(
-            [makeArgs = std::move(makeArgs)](const recipe::build_env& env) -> recipe::build_res_t
+            [makeArgs = std::move(makeArgs)](const recipe::build_env& env) -> result<void>
             {
                 auto makeArgsCopy = makeArgs;
                 for (auto& a: makeArgsCopy)
@@ -136,13 +133,13 @@ namespace recipe_builder
 
                 if (!run_child_proc(env.build_dir, env.variables, proc::search_path("make").string(), c_args))
                 {
-                    return std::unexpected(std::make_error_code(std::errc::io_error));
+                    return std::unexpected(error_t{"Process failed"});
                 }
                 return {};
             });
 
         r.build_steps.emplace_back(
-            [makeArgs = std::move(makeArgs)](const recipe::build_env& env) -> recipe::build_res_t
+            [makeArgs = std::move(makeArgs)](const recipe::build_env& env) -> result<void>
             {
                 auto makeArgsCopy = makeArgs;
                 for (auto& a: makeArgsCopy)
@@ -155,13 +152,13 @@ namespace recipe_builder
 
                 if (!run_child_proc(env.build_dir, env.variables, proc::search_path("make").string(), c_args))
                 {
-                    return std::unexpected(std::make_error_code(std::errc::io_error));
+                    return std::unexpected(error_t{"Process failed"});
                 }
                 return {};
             });
     }
 
-    export auto from_toml(std::string_view input) -> recipe
+    export auto from_toml(std::string_view input) -> result<recipe>
     {
         // logger::info("Called with input", input);
         auto parsed = toml::parse(input);
@@ -200,12 +197,16 @@ namespace recipe_builder
                 else
                 {
                     logger::error("Key", k, " should contain array, but it has", v.type());
+                    // todo make it better
+                    return std::unexpected(error_t{"Parse error"});
                 }
             }
         }
         else
         {
             logger::error("'propagates.env' is not a table, it is", env_node);
+            // todo make it better
+            return std::unexpected(error_t{"Parse error"});
         }
 
         return res;
@@ -238,23 +239,21 @@ namespace recipe_builder
         return std::ifstream((install_dir / succ_file).c_str()).good();
     }
 
-    export auto build(const recipe& pkg_recipe, const recipe::build_env& env)
+    export auto build(const recipe& pkg_recipe, const recipe::build_env& env) -> result<void>
     {
         if (is_success(env.install_dir))
         {
             logger::info("Already built", pkg_recipe.package_name);
-            return true;
+            return {};
         }
 
         for (const auto& step: pkg_recipe.build_steps)
         {
-            if (!step(env))
-            {
-                return false;
-            }
+            TRY(step(env));
         }
+
         set_success(env.install_dir);
-        return true;
+        return {};
     }
 
     export auto get_env_for_pkg(std::string_view name) -> recipe::build_env

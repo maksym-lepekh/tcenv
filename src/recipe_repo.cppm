@@ -33,7 +33,10 @@ PATH = ['bin']
 
 auto recipe_repo::init()
 {
-    recipes["sed"] = recipe_builder::from_toml(sed_4_9);
+    if (auto r = recipe_builder::from_toml(sed_4_9))
+    {
+        recipes["sed"] = r.value();
+    }
     return true;
 }
 
