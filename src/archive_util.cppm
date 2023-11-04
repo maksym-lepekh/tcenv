@@ -60,7 +60,10 @@ namespace archive_util
             logger::info("archive_read_open_filename()", ret, archive_error_string(reader));
             return false;
         }
-        FINALLY(archive_read_close(reader));
+        FINALLY
+        {
+            archive_read_close(reader);
+        }
 
         auto writer = c_api::opaque(archive_write_disk_new, archive_write_free);
         archive_write_disk_set_options(writer, ARCHIVE_EXTRACT_TIME);
