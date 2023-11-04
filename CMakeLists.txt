@@ -48,9 +48,11 @@ add_executable(tcenv
 target_sources(tcenv PRIVATE
         FILE_SET CXX_MODULES FILES
         src/download_util.cppm
-        src/log.cppm
+        src/logger.cppm
         src/c_api.cppm
         src/archive_util.cppm
+        src/recipe.cppm
+        src/recipe_repo.cppm
 )
 
 target_link_options(tcenv PRIVATE

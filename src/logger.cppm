@@ -4,23 +4,29 @@ module;
 #include <ctime>
 #include <iostream>
 
-export module log;
+export module logger;
 
-export struct log
+export struct logger
 {
     template <typename... Args>
     static void debug(Args... args)
     {
-        impl("DEBUG", std::forward<Args>(args)...);
+        if (instance().debug_enabled)
+        {
+            impl("DEBUG", std::forward<Args>(args)...);
+        }
     }
 
     template <typename... Args>
     static void info(Args... args)
     {
-        if (instance().debug_enabled)
-        {
-            impl("INFO", std::forward<Args>(args)...);
-        }
+        impl("INFO", std::forward<Args>(args)...);
+    }
+
+    template <typename... Args>
+    static void error(Args... args)
+    {
+        impl("ERROR", std::forward<Args>(args)...);
     }
 
     static void set_debug(bool enabled)
@@ -29,9 +35,9 @@ export struct log
     }
 
 private:
-    static auto instance() -> log&
+    static auto instance() -> logger&
     {
-        static log inst;
+        static logger inst;
         return inst;
     }
 

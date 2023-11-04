@@ -1,4 +1,4 @@
-FROM alpine:edge
+FROM docker.io/library/alpine:edge@sha256:f2d1645cd73c7e54584dc225da0b5229d19223412d719669ebda764f41396853
 
 # toolchain
 RUN apk add --no-cache llvm17 clang17 clang17-extra-tools
@@ -51,3 +51,6 @@ RUN wget https://gitlab.kitware.com/cmake/cmake/-/archive/v3.28.0-rc3/cmake-v3.2
 # project deps: libarchive, openssl
 RUN apk add --no-cache libarchive-dev libarchive-static acl-static zlib-static xz-static bzip2-static expat-static zstd-static
 RUN apk add --no-cache openssl-libs-static
+
+# other tools
+RUN apk add --no-cache gdb

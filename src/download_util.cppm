@@ -15,7 +15,7 @@ module;
 #include <openssl/ssl.h>
 
 export module download_util;
-import log;
+import logger;
 
 namespace net   = boost::asio;
 namespace beast = boost::beast;
@@ -37,13 +37,13 @@ namespace download_util
         }
         if (file_name.contains('/'))
         {
-            file_name = file_name.substr(file_name.find_last_of('/'));
+            file_name = file_name.substr(file_name.find_last_of('/') + 1);
         }
         auto dest_file = dest / file_name;
 
-        log::debug("host =", host);
-        log::debug("resource =", resource);
-        log::debug("dest_file =", dest_file);
+        logger::debug("host =", host);
+        logger::debug("resource =", resource);
+        logger::debug("dest_file =", dest_file);
 
         auto ioc = net::io_context{};
         auto ctx = net::ssl::context{net::ssl::context::tlsv12_client};

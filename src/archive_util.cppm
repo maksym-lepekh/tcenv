@@ -7,7 +7,7 @@ module;
 #include <gsl/pointers>
 
 export module archive_util;
-import log;
+import logger;
 import c_api;
 
 namespace fs = std::filesystem;
@@ -34,7 +34,7 @@ namespace
             auto ret = archive_write_data_block(aw, buff, size, offset);
             if (ret != ARCHIVE_OK)
             {
-                log::debug("archive_write_data_block()", archive_error_string(aw));
+                logger::debug("archive_write_data_block()", archive_error_string(aw));
                 return ret;
             }
         }
@@ -45,8 +45,8 @@ namespace archive_util
 {
     export auto extract(const fs::path& input, const fs::path& dest) -> bool
     {
-        log::debug("input = ", input);
-        log::debug("dest = ", dest);
+        logger::debug("input = ", input);
+        logger::debug("dest = ", dest);
 
         auto reader = c_api::opaque(archive_read_new, archive_read_free);
 
@@ -57,12 +57,13 @@ namespace archive_util
         auto ret                  = archive_read_open_filename(reader, input.c_str(), chunk_size);
         if (ret != 0)
         {
-            log::info("archive_read_open_filename()", ret, archive_error_string(reader));
+            logger::info("archive_read_open_filename()", ret, archive_error_string(reader));
             return false;
         }
         FINALLY(archive_read_close(reader));
 
         auto writer = c_api::opaque(archive_write_disk_new, archive_write_free);
+        archive_write_disk_set_options(writer, ARCHIVE_EXTRACT_TIME);
 
         for (;;)
         {
@@ -75,7 +76,7 @@ namespace archive_util
 
             if (ret != ARCHIVE_OK)
             {
-                log::info("archive_read_next_header()", archive_error_string(reader));
+                logger::info("archive_read_next_header()", archive_error_string(reader));
                 return false;
             }
 
@@ -85,7 +86,7 @@ namespace archive_util
             ret = archive_write_header(writer, entry);
             if (ret != ARCHIVE_OK)
             {
-                log::info("archive_write_header()", archive_error_string(writer));
+                logger::info("archive_write_header()", archive_error_string(writer));
                 return false;
             }
 
@@ -93,7 +94,7 @@ namespace archive_util
             ret = archive_write_finish_entry(writer);
             if (ret != ARCHIVE_OK)
             {
-                log::info("archive_write_finish_entry()", archive_error_string(writer));
+                logger::info("archive_write_finish_entry()", archive_error_string(writer));
                 return false;
             }
         }
