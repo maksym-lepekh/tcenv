@@ -15,4 +15,6 @@ misc-no-recursion,
 misc-throw-by-value-catch-by-reference,
 misc-uniqueptr-reset-release,
 openmp-use-default-none,
-portability-simd-intrinsics'
+portability-simd-intrinsics,
+-bugprone-easily-swappable-parameters
+'

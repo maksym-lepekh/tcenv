@@ -16,27 +16,27 @@ namespace fs = std::filesystem;
 
 namespace
 {
-    auto copy_data(gsl::not_null<archive*> ar, gsl::not_null<archive*> aw) -> result<void>
+    auto copy_data(const gsl::not_null<archive*> a_reader, const gsl::not_null<archive*> a_writer) -> result<void>
     {
         for (;;)
         {
-            const void* buff;
-            size_t size;
-            int64_t offset;
+            const void* buff = {};
+            size_t size      = {};
+            int64_t offset   = {};
 
-            auto r = archive_read_data_block(ar, &buff, &size, &offset);
-            if (r == ARCHIVE_EOF)
+            const auto res = archive_read_data_block(a_reader, &buff, &size, &offset);
+            if (res == ARCHIVE_EOF)
             {
                 return {};
             }
-            if (r != ARCHIVE_OK)
+            if (res != ARCHIVE_OK)
             {
-                return std::unexpected(error_t{archive_error_string(ar)});
+                return std::unexpected(error_t{archive_error_string(a_reader)});
             }
-            auto ret = archive_write_data_block(aw, buff, size, offset);
-            if (ret != ARCHIVE_OK)
+
+            if (const auto ret = archive_write_data_block(a_writer, buff, size, offset); ret != ARCHIVE_OK)
             {
-                return std::unexpected(error_t{archive_error_string(aw)});
+                return std::unexpected(error_t{archive_error_string(a_writer)});
             }
         }
     }
@@ -64,15 +64,15 @@ namespace archive_util
         FINALLY
         {
             archive_read_close(reader);
-        }
+        };
 
         auto writer = c_api::opaque(archive_write_disk_new, archive_write_free);
         archive_write_disk_set_options(writer, ARCHIVE_EXTRACT_TIME);
 
         for (;;)
         {
-            struct archive_entry* entry;
-            ret = archive_read_next_header(reader, &entry);
+            archive_entry* entry = nullptr;
+            ret                  = archive_read_next_header(reader, &entry);
             if (ret == ARCHIVE_EOF)
             {
                 break;
