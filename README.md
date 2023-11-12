@@ -8,11 +8,19 @@ Dependencies:
 * `dive` (optional)
 
 Project uses C++ modules, so it has strict toolchain requirements:
-* CMake 3.26+
-* Ninja 1.10+
-* Clang 16+
-* Libc++ 16+
 
+* CMake 3.28+
+* Ninja 1.10+
+* Clang 17+
+* Libc++ 17+
+
+# First build
+
+```shell
+just full-rebuild
+```
+
+# More commands
 Run `just` to see available commands:
 ```
 Available recipes:
