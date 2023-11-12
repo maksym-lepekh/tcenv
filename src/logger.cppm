@@ -29,7 +29,7 @@ export struct logger
         impl("ERROR", std::forward<Args>(args)...);
     }
 
-    static void set_debug(bool enabled)
+    static void set_debug(const bool enabled)
     {
         instance().debug_enabled = enabled;
     }
@@ -47,10 +47,10 @@ private:
     static void impl(const char* lvl, Args... args)
     {
         constexpr auto max_date_str = 256;
-        auto now                    = std::time(nullptr);
-        auto* local_now             = std::localtime(&now);
+        const auto now              = std::time(nullptr);
+        const auto* local_now       = std::localtime(&now);
         auto buf                    = std::array<char, max_date_str>{};
-        auto written                = std::strftime(buf.data(), buf.size(), "%F %T", local_now);
+        const auto written          = std::strftime(buf.data(), buf.size(), "%F %T", local_now);
         assert(written != 0);
         assert(written < 256);
 

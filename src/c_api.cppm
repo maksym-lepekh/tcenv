@@ -8,8 +8,7 @@ export namespace c_api
     template <typename T, typename Deleter>
     struct opaque
     {
-        opaque(auto alloc_fn, auto free_fn): value(alloc_fn()), deleter(free_fn) {
-        }
+        opaque(auto alloc_fn, auto free_fn): value(alloc_fn()), deleter(free_fn) {}
 
         opaque(auto alloc_fn, auto free_fn, auto init_fn, auto... init_args): value(alloc_fn()), deleter(free_fn)
         {
@@ -28,9 +27,10 @@ export namespace c_api
             return *this;
         }
 
-        opaque(const opaque&) = delete;
+        opaque(const opaque&)                    = delete;
         auto operator=(const opaque&) -> opaque& = delete;
 
+        // ReSharper disable once CppNonExplicitConversionOperator
         operator T*() noexcept
         {
             return value;

@@ -26,9 +26,9 @@ namespace fs    = std::filesystem;
 
 namespace
 {
-    auto to_msg(boost::beast::error_code ec) -> std::string
+    auto to_msg(const beast::error_code& ecode) -> std::string
     {
-        return ec.category().name() + ":"s + ec.message();
+        return ecode.category().name() + ":"s + ecode.message();
     }
 }    // namespace
 
@@ -62,7 +62,7 @@ namespace download_util
 
         stream.set_verify_mode(net::ssl::verify_none);
         stream.set_verify_callback(
-            [](bool pre_verified, net::ssl::verify_context& ctx)
+            [](bool, net::ssl::verify_context&)
             {
                 return true;    // Accept any certificate
             });
@@ -70,18 +70,19 @@ namespace download_util
         // Enable SNI
         if (!SSL_set_tlsext_host_name(stream.native_handle(), host.data()))
         {
-            beast::error_code ec{static_cast<int>(::ERR_get_error()), net::error::get_ssl_category()};
-            return std::unexpected(error_t{to_msg(ec)});
+            beast::error_code error_c{static_cast<int>(ERR_get_error()), net::error::get_ssl_category()};
+            return std::unexpected(error_t{to_msg(error_c)});
         }
 
         // Connect to the HTTPS server
         constexpr auto connect_timeout = std::chrono::seconds(30);
-        auto resolver = net::ip::tcp::resolver{ioc};
+        auto resolver                  = net::ip::tcp::resolver{ioc};
         get_lowest_layer(stream).connect(resolver.resolve({host, "443"}));
         get_lowest_layer(stream).expires_after(connect_timeout);
 
         // Construct request
-        auto req = http::request<http::empty_body>{http::verb::get, resource, 11};
+        constexpr auto http_1_1_ver = 11;
+        auto req                    = http::request<http::empty_body>{http::verb::get, resource, http_1_1_ver};
         req.set(http::field::host, host);
         req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
 
@@ -91,25 +92,25 @@ namespace download_util
 
         // Receive the response
         beast::flat_buffer buffer;
-        auto res = http::response<http::file_body>{};
-        auto ec  = boost::beast::error_code{};
-        res.body().open(dest_file.c_str(), beast::file_mode::write, ec);
-        if (ec)
+        auto res   = http::response<http::file_body>{};
+        auto err_c = beast::error_code{};
+        res.body().open(dest_file.c_str(), beast::file_mode::write, err_c);
+        if (err_c)
         {
-            return std::unexpected(error_t{to_msg(ec)});
+            return std::unexpected(error_t{to_msg(err_c)});
         }
 
         http::read(stream, buffer, res);
 
         // Cleanup
-        stream.shutdown(ec);
-        if (ec == net::error::eof)
+        stream.shutdown(err_c);
+        if (err_c == net::error::eof)
         {
-            ec = {};
+            err_c = {};
         }
-        if (ec)
+        if (err_c)
         {
-            return std::unexpected(error_t{to_msg(ec)});
+            return std::unexpected(error_t{to_msg(err_c)});
         }
 
         return dest_file;

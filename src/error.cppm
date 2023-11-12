@@ -11,23 +11,18 @@ using namespace std::literals;
 
 export struct error_t
 {
-    error_t(std::error_code ec, std::source_location caller_loc = std::source_location::current())
+    error_t(std::error_code ec, std::source_location caller_loc = std::source_location::current()): loc(caller_loc)
     {
         message = ec.category().name() + ":"s + ec.message();
-        loc     = caller_loc;
     }
 
-    error_t(const std::exception& e, std::source_location caller_loc = std::source_location::current())
-    {
-        message = e.what();
-        loc     = caller_loc;
-    }
+    error_t(const std::exception& e, std::source_location caller_loc = std::source_location::current()):
+        message(e.what()), loc(caller_loc)
+    {}
 
-    error_t(std::string msg, std::source_location caller_loc = std::source_location::current())
-    {
-        message = msg;
-        loc     = caller_loc;
-    }
+    error_t(std::string msg, std::source_location caller_loc = std::source_location::current()):
+        message(std::move(msg)), loc(caller_loc)
+    {}
 
     std::string message;
     std::source_location loc;

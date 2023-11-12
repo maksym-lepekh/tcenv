@@ -1,7 +1,7 @@
 export module type_sec;
 
 // Andrei Alexandrescu encouraged me to add this into every project
-export template <typename... T>
+export template <typename...>
 struct type_seq
 {
 };
@@ -16,7 +16,7 @@ struct inspect<type_seq<T, Ts...>>
     using tail_t = type_seq<Ts...>;
 };
 
-template <typename T, typename List>
+template <typename, typename>
 struct concat
 {
 };

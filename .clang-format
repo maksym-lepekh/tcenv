@@ -92,7 +92,7 @@ PointerAlignment: Left
 QualifierAlignment: Left
 ReferenceAlignment: Left
 ReflowComments: true
-RemoveSemicolon: true
+RemoveSemicolon: false
 RequiresClausePosition: OwnLine
 RequiresExpressionIndentation: OuterScope
 SeparateDefinitionBlocks: Always

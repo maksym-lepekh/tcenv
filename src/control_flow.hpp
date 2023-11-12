@@ -5,9 +5,9 @@
 
 struct finally_receiver
 {
-    auto operator->*(auto&& fn)
+    auto operator->*(auto&& closure_fn)
     {
-        return gsl::finally(std::forward<decltype(fn)>(fn));
+        return gsl::finally(std::forward<decltype(closure_fn)>(closure_fn));
     }
 };
 
