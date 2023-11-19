@@ -39,10 +39,11 @@ RUN wget https://github.com/lz4/lz4/releases/download/v1.9.4/lz4-1.9.4.tar.gz \
 RUN apk add --no-cache pkgconf ninja-build ninja-is-really-ninja lf ccache git just
 
 # cmake 3.28
+ARG CMAKE_VER="v3.28.0-rc5"
 RUN apk add --no-cache openssl-dev
-RUN wget https://gitlab.kitware.com/cmake/cmake/-/archive/v3.28.0-rc3/cmake-v3.28.0-rc3.tar.gz \
-    && tar xzf cmake-v3.28.0-rc3.tar.gz \
-    && cd cmake-v3.28.0-rc3/ \
+RUN wget https://gitlab.kitware.com/cmake/cmake/-/archive/${CMAKE_VER}/cmake-${CMAKE_VER}.tar.gz \
+    && tar xzf cmake-${CMAKE_VER}.tar.gz \
+    && cd cmake-${CMAKE_VER}/ \
     && ./bootstrap  \
     && make  \
     && make install \

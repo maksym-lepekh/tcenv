@@ -6,12 +6,12 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 # ccache
+option(USE_CCACHE "Enable ccache in the build" ON)
 find_program(CCACHE_PROGRAM ccache)
-if(CCACHE_PROGRAM)
+if (CCACHE_PROGRAM AND USE_CCACHE)
     set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
 endif()
 
-# gsl
 include(FetchContent)
 FetchContent_Declare(GSL
         GIT_REPOSITORY "https://github.com/microsoft/GSL"
@@ -19,15 +19,25 @@ FetchContent_Declare(GSL
         GIT_SHALLOW ON
 )
 
-# toml++
 FetchContent_Declare(
         tomlplusplus
         GIT_REPOSITORY https://github.com/marzer/tomlplusplus.git
         GIT_TAG v3.4.0
 )
 
-FetchContent_MakeAvailable(GSL)
-FetchContent_MakeAvailable(tomlplusplus)
+FetchContent_Declare(
+        digestpp
+        GIT_REPOSITORY https://github.com/kerukuro/digestpp.git
+        GIT_TAG ebb699402c244e22c3aff61d2239bcb2e87b8ef8
+)
+
+FetchContent_Declare(
+        PicoSHA2
+        GIT_REPOSITORY https://github.com/okdshin/PicoSHA2.git
+        GIT_TAG v1.0.0
+)
+
+FetchContent_MakeAvailable(GSL tomlplusplus digestpp PicoSHA2)
 
 # boost
 set(Boost_USE_STATIC_RUNTIME ON)
@@ -43,6 +53,7 @@ add_executable(tcenv
         src/main.cpp
         src/control_flow.hpp
         src/clangd_fixer.hpp
+        src/download_step.cppm
 )
 
 target_sources(tcenv PRIVATE
@@ -51,10 +62,13 @@ target_sources(tcenv PRIVATE
         src/logger.cppm
         src/c_api.cppm
         src/archive_util.cppm
-        src/recipe.cppm
         src/recipe_repo.cppm
         src/error.cppm
         src/type_seq.cppm
+        src/download_step.cppm
+        src/recipe_builder.cppm
+        src/recipe_types.cppm
+        src/store_util.cppm
 )
 
 target_link_options(tcenv PRIVATE
@@ -69,6 +83,11 @@ target_link_libraries(tcenv
         libarchive::static
         Microsoft.GSL::GSL
         tomlplusplus::tomlplusplus
+)
+
+target_include_directories(tcenv PRIVATE
+        ${digestpp_SOURCE_DIR}
+        ${picosha2_SOURCE_DIR}
 )
 
 # use libc++

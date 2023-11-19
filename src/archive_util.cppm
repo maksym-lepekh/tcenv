@@ -12,8 +12,13 @@ import error;
 import logger;
 import c_api;
 
-namespace fs = std::filesystem;
+export namespace archive_util
+{
+    using std::filesystem::path;
+    auto extract(const path& input, const path& dest) -> result<void>;
+}
 
+module :private;
 namespace
 {
     auto copy_data(const gsl::not_null<archive*> a_reader, const gsl::not_null<archive*> a_writer) -> result<void>
@@ -44,7 +49,7 @@ namespace
 
 namespace archive_util
 {
-    export auto extract(const fs::path& input, const fs::path& dest) -> result<void>
+    auto extract(const path& input, const path& dest) -> result<void>
     {
         logger::debug("input = ", input);
         logger::debug("dest = ", dest);

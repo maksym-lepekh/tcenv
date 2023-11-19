@@ -2,7 +2,7 @@
   <profile version="1.0">
     <option name="myName" value="Project Default" />
     <inspection_tool class="ArrayIndexOutOfBounds" enabled="false" level="WARNING" enabled_by_default="false" />
-    <inspection_tool class="ClangTidy" enabled="true" level="WARNING" enabled_by_default="true">
+    <inspection_tool class="ClangTidy" enabled="false" level="WARNING" enabled_by_default="false">
       <option name="clangTidyChecks" value="-*,openmp-use-default-none,portability-simd-intrinsics,bugprone-*,clang-analyzer-*,cppcoreguidelines-*,modernize-*,performance-*,readability-*" />
     </inspection_tool>
     <inspection_tool class="ClangdErrorsAndWarnings" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -10,6 +10,25 @@
     <inspection_tool class="ConstantConditionsOC" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="ConstantFunctionResult" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="ConstantParameter" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppDFAArrayIndexOutOfBounds" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppDFAConstantConditions" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppDFAConstantFunctionResult" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppDFAConstantParameter" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppDFADeletedPointer" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppDFAEndlessLoop" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppDFAInfiniteRecursion" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppDFAInvalidatedMemory" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppDFALocalValueEscapesFunction" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppDFALocalValueEscapesScope" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppDFALoopConditionNotUpdated" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppDFAMemoryLeak" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppDFANotInitializedField" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppDFANullDereference" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppDFATimeOver" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppDFAUnreachableCode" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppDFAUnreachableFunctionCall" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppDFAUnreadVariable" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppDFAUnusedValue" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="DanglingPointer" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="EmptyDeclOrStmt" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="EndlessLoop" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -28,6 +47,7 @@
     <inspection_tool class="OCUnusedStruct" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="OCUnusedTemplateParameter" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="OCUnusedTypeAlias" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="PreprocessorComment" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="Simplify" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="UnconstrainedVariableType" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="UnreachableCallsOfFunction" enabled="false" level="WARNING" enabled_by_default="false" />

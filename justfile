@@ -1,5 +1,5 @@
 oci_tool := `which podman > /dev/null && echo podman || echo docker`
-oci_volume_args := if oci_tool == "podman" { '--ignore' } else { '' }
+oci_volume_args := if oci_tool == "podman" { ' --ignore' } else { '' }
 oci_run_args := if oci_tool == "podman" { '--security-opt label=disable' } else { '' }
 build_dir := 'cmake-build-default'
 image_base := 'tcenv'
@@ -8,9 +8,9 @@ _default:
   @just --list
 
 _prep_volumes:
-    {{oci_tool}} volume create {{oci_volume_args}} tcenv-tcroot > /dev/null
-    {{oci_tool}} volume create {{oci_volume_args}} tcenv-build > /dev/null
-    {{oci_tool}} volume create {{oci_volume_args}} tcenv-ccache > /dev/null
+    {{oci_tool}} volume create{{oci_volume_args}} tcenv-tcroot > /dev/null
+    {{oci_tool}} volume create{{oci_volume_args}} tcenv-build > /dev/null
+    {{oci_tool}} volume create{{oci_volume_args}} tcenv-ccache > /dev/null
 
 _run IMAGE *ARGS:
     @echo $(tput bold)docker run '...' {{image_base}}:{{IMAGE}} {{ARGS}}$(tput sgr0)

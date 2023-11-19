@@ -34,5 +34,5 @@ export auto operator<<(std::ostream& out, error_t err) -> std::ostream&
                << ":" << err.loc.column();
 }
 
-export template <typename T>
+export template <typename T = void>
 using result = std::expected<T, error_t>;

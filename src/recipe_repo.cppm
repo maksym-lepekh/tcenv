@@ -1,13 +1,12 @@
 module;
-#include "clangd_fixer.hpp"
-
 #include <optional>
 #include <string_view>
 #include <unordered_map>
 
 export module recipe_repo;
-import recipe;
-FIX_CLANGD_MODULES
+import c_api;
+import recipe_builder;
+import recipe_types;
 
 export struct recipe_repo
 {
@@ -18,22 +17,24 @@ export struct recipe_repo
     std::unordered_map<std::string, recipe> recipes;
 };
 
+module :private;
+
 constexpr auto sed_4_9 = R"(
-[package]
-name = "sed"
-version = "4.9"
+    [package]
+    name = "sed"
+    version = "4.9"
 
-[src]
-url = "https://ftp.gnu.org/gnu/sed/sed-4.9.tar.xz"
-preset = "gnu"
+    [src]
+    url = "https://ftp.gnu.org/gnu/sed/sed-4.9.tar.xz"
+    preset = "gnu"
 
-[propagates.env]
-PATH = ['bin']
+    [propagates.env]
+    PATH = ['bin']
 )";
 
 auto recipe_repo::init()
 {
-    if (auto r = recipe_builder::from_toml(sed_4_9))
+    if (auto r = builder::from_toml(sed_4_9))
     {
         recipes["sed"] = r.value();
     }

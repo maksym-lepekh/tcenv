@@ -6,8 +6,8 @@
 #include <utility>
 
 import logger;
-import recipe;
 import recipe_repo;
+import recipe_builder;
 FIX_CLANGD_MODULES
 
 using namespace std::literals;
@@ -30,12 +30,12 @@ auto main(int argc, char* argv[]) -> int
         logger::info("Repo initialized");
 
         constexpr auto pkg = "sed";
-        auto b_env         = recipe_builder::get_env_for_pkg("sed");
+        auto b_env         = builder::get_env_for_pkg("sed");
         if (auto r = repo.find_by_name("sed"))
         {
             logger::info("Found recipe for", pkg);
-            recipe_builder::print_recipe(*r);
-            auto res = recipe_builder::build(*r, b_env);
+            builder::print_recipe(*r);
+            auto res = builder::build(*r, b_env);
             if (!res)
             {
                 logger::error(res.error());
