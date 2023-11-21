@@ -1,4 +1,5 @@
 {
+  "name": "env",
   "build": {
     "dockerfile": "../oci/Dockerfile.proj"
   },

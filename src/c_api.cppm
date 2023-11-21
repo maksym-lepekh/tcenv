@@ -1,7 +1,5 @@
-module;
-#include <functional>
-
 export module c_api;
+import std;
 
 export namespace c_api
 {

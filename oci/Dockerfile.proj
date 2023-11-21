@@ -55,3 +55,13 @@ RUN apk add --no-cache openssl-libs-static
 
 # other tools
 RUN apk add --no-cache gdb
+
+RUN git clone https://github.com/llvm/llvm-project.git --depth 1 --branch 'release/17.x' \
+    && cd llvm-project \
+    && mkdir build \
+    && CC=clang CXX=clang++ cmake -G Ninja -S runtimes -B build \
+    -DLIBCXX_ENABLE_STD_MODULES=ON \
+    -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DLIBCXX_HAS_MUSL_LIBC=ON \
+    && ninja -C build

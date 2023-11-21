@@ -1,8 +1,7 @@
 {
 	"clangd.arguments": [
 		"--compile-commands-dir=.clangd-internal",
-		"--background-index=true",
-		"--all-scopes-completion=true"
+		"--background-index=true"
 	],
 	"cmake.allowUnsupportedPresetsVersions": true,
 	"cmake.copyCompileCommands": "${workspaceRoot}/.clangd-internal/compile_commands.json",

@@ -1,13 +1,10 @@
 module;
-#include <expected>
-#include <ostream>
-#include <source_location>
 #include <string>
-#include <system_error>
 
 export module error;
+import std;
 
-using namespace std::literals;
+using namespace std::string_literals;
 
 export struct error_t
 {
@@ -28,7 +25,7 @@ export struct error_t
     std::source_location loc;
 };
 
-export auto operator<<(std::ostream& out, error_t err) -> std::ostream&
+export auto operator<<(std::ostream& out, const error_t& err) -> std::ostream&
 {
     return out << err.message << "@" << err.loc.function_name() << "[" << err.loc.file_name() << ":" << err.loc.line()
                << ":" << err.loc.column();

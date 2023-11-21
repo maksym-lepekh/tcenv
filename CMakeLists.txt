@@ -3,7 +3,9 @@ cmake_minimum_required(VERSION 3.28)
 project(tcenv VERSION 0.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+
+# todo fixme for `import std`
+# set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 # ccache
 option(USE_CCACHE "Enable ccache in the build" ON)
@@ -11,6 +13,10 @@ find_program(CCACHE_PROGRAM ccache)
 if (CCACHE_PROGRAM AND USE_CCACHE)
     set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
 endif()
+
+# setup llvm compiler and libc++
+include(cmake/llvm.cmake)
+set_llvm_libcxx()
 
 include(FetchContent)
 FetchContent_Declare(GSL
@@ -52,8 +58,6 @@ tcenv_find_pkgconfig(libssl)
 add_executable(tcenv
         src/main.cpp
         src/control_flow.hpp
-        src/clangd_fixer.hpp
-        src/download_step.cppm
 )
 
 target_sources(tcenv PRIVATE
@@ -89,10 +93,5 @@ target_include_directories(tcenv PRIVATE
         ${digestpp_SOURCE_DIR}
         ${picosha2_SOURCE_DIR}
 )
-
-# use libc++
-target_link_options(tcenv PRIVATE "-stdlib=libc++")
-target_compile_options(tcenv PRIVATE "-stdlib=libc++")
-target_link_libraries(tcenv c++abi)
 
 install(TARGETS tcenv DESTINATION bin)

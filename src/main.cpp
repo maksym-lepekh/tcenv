@@ -1,14 +1,8 @@
-#include "clangd_fixer.hpp"
-
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <utility>
-
+#include <cstdlib>
+import std;
 import logger;
 import recipe_repo;
 import recipe_builder;
-FIX_CLANGD_MODULES
 
 using namespace std::literals;
 

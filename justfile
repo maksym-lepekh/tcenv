@@ -46,7 +46,7 @@ configure *ARGS: ( _run 'proj' 'cmake --preset=default' ARGS )
 rebuild *ARGS: ( configure '--fresh' ) build
 
 # rebuild docker, clean cache and then build project
-full-rebuild: ( build-image 'proj' ) ( _run 'proj' 'ccache --clear' ) rebuild
+full-rebuild: ( build-image 'proj' ) ( _run 'proj' 'ccache --clear' ) ( _run 'proj' ('rm -r ' + build_dir + '/* || echo clean') ) rebuild
 
 # run 'tcenv' in specified stage. Example: just run 0 test
 run STAGE *ARGS: build ( _run ('stage' + STAGE) (build_dir + '/tcenv') ARGS )

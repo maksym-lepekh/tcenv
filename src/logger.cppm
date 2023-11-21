@@ -1,10 +1,8 @@
 module;
-#include <array>
 #include <cassert>
-#include <ctime>
-#include <iostream>
 
 export module logger;
+import std;
 
 export struct logger
 {

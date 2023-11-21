@@ -1,10 +1,9 @@
 module;
-#include <vector>
-#include <filesystem>
-#include <boost/process.hpp>
+#include <boost/process/environment.hpp>
 #include <picosha2.h>
 
 export module recipe_types;
+import std;
 import error;
 
 export struct recipe
