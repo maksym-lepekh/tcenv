@@ -1,16 +1,12 @@
-module;
+#include "recipe_builder.hpp"
+
 #include <boost/process.hpp>
 #include <toml++/toml.hpp>
 #include "control_flow.hpp"
+#include "download_step.hpp"
+#include "logger.hpp"
 
-export module recipe_builder;
-import std;
-import recipe_types;
-import download_step;
-import logger;
-import error;
-
-export namespace builder
+namespace builder
 {
     auto from_toml(std::string_view input) -> result<recipe>;
     void print_recipe(const recipe& input);
@@ -18,7 +14,6 @@ export namespace builder
     auto get_env_for_pkg(std::string_view name) -> recipe::build_env;
 }
 
-module :private;
 using namespace std::literals;
 
 namespace builder

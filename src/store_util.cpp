@@ -1,18 +1,5 @@
-module;
-#include <string>
-
-export module store_util;
-import std;
-import error;
-
-export namespace file_marker
-{
-    using std::filesystem::path;
-
-    auto is_set(const path& base_dir, std::string_view name, std::string_view val = {}) -> bool;
-    auto clear(const path& base_dir, std::string_view name) -> result<>;
-    auto set(const path& base_dir, std::string_view name, std::string_view val = {}) -> result<>;
-}
+#include "store_util.hpp"
+#include <fstream>
 
 using namespace std::literals;
 

@@ -1,25 +1,13 @@
-module;
+#include "download_step.hpp"
 #include "control_flow.hpp"
 #include <picosha2.h>
 
-export module download_step;
-import std;
-import recipe_types;
-import download_util;
-import archive_util;
-import logger;
-import error;
-import store_util;
+#include "download_util.hpp"
+#include "logger.hpp"
+#include "store_util.hpp"
+#include <fstream>
 
-export struct download_step
-{
-    std::string url;
-    std::string sha256;
-    auto operator()(const recipe::build_env& env) const -> result<void>;
-    auto get_sha_data() const -> std::vector<std::string>;
-};
-
-static_assert(std::is_convertible_v<download_step, recipe::build_step_fn>);
+#include "archive_util.hpp"
 
 using namespace std::literals;
 
@@ -65,5 +53,5 @@ auto download_step::operator()(const recipe::build_env& env) const -> result<voi
 
 auto download_step::get_sha_data() const -> std::vector<std::string>
 {
-    return { url, sha256 };
+    return {url, sha256};
 }

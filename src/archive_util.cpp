@@ -1,23 +1,12 @@
-module;
+#include "archive_util.hpp"
 #include "control_flow.hpp"
-
+#include "logger.hpp"
+#include "c_api.hpp"
 #include <archive.h>
 #include <archive_entry.h>
 #include <gsl/pointers>
 
-export module archive_util;
-import std;
-import error;
-import logger;
-import c_api;
 
-export namespace archive_util
-{
-    using std::filesystem::path;
-    auto extract(const path& input, const path& dest) -> result<void>;
-}
-
-module :private;
 namespace
 {
     auto copy_data(const gsl::not_null<archive*> a_reader, const gsl::not_null<archive*> a_writer) -> result<void>

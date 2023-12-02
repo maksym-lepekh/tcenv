@@ -1,9 +1,9 @@
+#include "logger.hpp"
 #include <cstdlib>
 #include <string_view>
-import std;
-import logger;
-import recipe_repo;
-import recipe_builder;
+
+#include "recipe_builder.hpp"
+#include "recipe_repo.hpp"
 
 using namespace std::literals;
 
@@ -24,14 +24,13 @@ auto main(int argc, char* argv[]) -> int
         repo.init();
         logger::info("Repo initialized");
 
-        constexpr auto pkg = "sed";
         auto b_env         = builder::get_env_for_pkg("sed");
         if (auto rec = repo.find_by_name("sed"))
         {
+            constexpr auto pkg = "sed";
             logger::info("Found recipe for", pkg);
             builder::print_recipe(*rec);
-            auto res = builder::build(*rec, b_env);
-            if (!res)
+            if (auto res = builder::build(*rec, b_env); !res)
             {
                 logger::error(res.error());
                 return EXIT_FAILURE;

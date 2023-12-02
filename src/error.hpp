@@ -1,15 +1,17 @@
-module;
+#ifndef ERROR_HPP
+#define ERROR_HPP
+
 #include <string>
+#include <system_error>
+#include <source_location>
+#include <expected>
 
-export module error;
-import std;
 
-using namespace std::string_literals;
-
-export struct error_t
+struct error_t
 {
     error_t(std::error_code ec, std::source_location caller_loc = std::source_location::current()): loc(caller_loc)
     {
+        using namespace std::string_literals;
         message = ec.category().name() + ":"s + ec.message();
     }
 
@@ -25,11 +27,9 @@ export struct error_t
     std::source_location loc;
 };
 
-export auto operator<<(std::ostream& out, const error_t& err) -> std::ostream&
-{
-    return out << err.message << "@" << err.loc.function_name() << "[" << err.loc.file_name() << ":" << err.loc.line()
-               << ":" << err.loc.column();
-}
+auto operator<<(std::ostream& out, const error_t& err) -> std::ostream&;
 
-export template <typename T = void>
+template <typename T = void>
 using result = std::expected<T, error_t>;
+
+#endif // ERROR_HPP

@@ -1,10 +1,14 @@
-module;
+#ifndef LOGGER_HPP
+#define LOGGER_HPP
+
 #include <cassert>
+#include <ctime>
+#include <utility>
+#include <array>
+#include <iostream>
 
-export module logger;
-import std;
 
-export struct logger
+struct logger
 {
     template <typename... Args>
     static void debug(Args... args)
@@ -57,3 +61,5 @@ private:
         std::cerr << "\n";
     }
 };
+
+#endif // LOGGER_HPP

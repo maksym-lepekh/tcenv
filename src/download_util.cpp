@@ -1,4 +1,5 @@
-module;
+#include "download_util.hpp"
+#include "logger.hpp"
 
 #include <boost/asio/connect.hpp>
 #include <boost/asio/ip/tcp.hpp>
@@ -11,11 +12,6 @@ module;
 #include <boost/beast/version.hpp>
 #include <boost/url.hpp>
 #include <openssl/ssl.h>
-
-export module download_util;
-import std;
-import logger;
-import error;
 
 using namespace std::literals;
 namespace net   = boost::asio;
@@ -33,7 +29,7 @@ namespace
 
 namespace download_util
 {
-    export auto download(const std::string& url, const fs::path& dest) -> result<fs::path>
+    auto download(const std::string& url, const fs::path& dest) -> result<fs::path>
     {
         auto parsed_url = boost::urls::parse_uri(url);
         auto host       = std::string(parsed_url->encoded_host());

@@ -58,21 +58,19 @@ tcenv_find_pkgconfig(libssl)
 add_executable(tcenv
         src/main.cpp
         src/control_flow.hpp
+        src/error.cpp
+        src/archive_util.cpp
+        src/download_step.cpp
+        src/download_util.cpp
+        src/store_util.cpp
+        src/recipe_types.cpp
+        src/recipe_repo.cpp
+        src/recipe_builder.cpp
 )
 
 target_sources(tcenv PRIVATE
         FILE_SET CXX_MODULES FILES
-        src/download_util.cppm
-        src/logger.cppm
-        src/c_api.cppm
-        src/archive_util.cppm
-        src/recipe_repo.cppm
-        src/error.cppm
         src/type_seq.cppm
-        src/download_step.cppm
-        src/recipe_builder.cppm
-        src/recipe_types.cppm
-        src/store_util.cppm
 )
 
 target_link_options(tcenv PRIVATE

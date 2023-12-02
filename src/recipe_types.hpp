@@ -1,12 +1,12 @@
-module;
+#ifndef RECIPE_TYPES_HPP
+#define RECIPE_TYPES_HPP
+
+#include "error.hpp"
+#include <filesystem>
 #include <boost/process/environment.hpp>
 #include <picosha2.h>
 
-export module recipe_types;
-import std;
-import error;
-
-export struct recipe
+struct recipe
 {
     std::string package_name;
     std::string package_version;
@@ -28,13 +28,4 @@ export struct recipe
     [[nodiscard]] auto get_sha256() const -> std::string;
 };
 
-auto recipe::get_sha256() const -> std::string
-{
-    auto hasher = picosha2::hash256_one_by_one{};
-    for (auto&& val: hash_data)
-    {
-        hasher.process(val.begin(), val.end());
-    }
-    hasher.finish();
-    return get_hash_hex_string(hasher);
-}
+#endif // RECIPE_TYPES_HPP

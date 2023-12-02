@@ -1,7 +1,9 @@
-export module c_api;
-import std;
+#pragma once
 
-export namespace c_api
+#include <type_traits>
+#include <utility>
+
+namespace c_api
 {
     template <typename T, typename Deleter>
     struct opaque

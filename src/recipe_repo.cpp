@@ -1,19 +1,4 @@
-export module recipe_repo;
-import std;
-import c_api;
-import recipe_builder;
-import recipe_types;
-
-export struct recipe_repo
-{
-    auto init();
-
-    auto find_by_name(std::string_view pkg_name) -> std::optional<recipe>;
-
-    std::unordered_map<std::string, recipe> recipes;
-};
-
-module :private;
+#include "recipe_repo.hpp"
 
 constexpr auto sed_4_9 = R"(
     [package]
