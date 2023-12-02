@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <string_view>
 import std;
 import logger;
 import recipe_repo;
@@ -25,11 +26,11 @@ auto main(int argc, char* argv[]) -> int
 
         constexpr auto pkg = "sed";
         auto b_env         = builder::get_env_for_pkg("sed");
-        if (auto r = repo.find_by_name("sed"))
+        if (auto rec = repo.find_by_name("sed"))
         {
             logger::info("Found recipe for", pkg);
-            builder::print_recipe(*r);
-            auto res = builder::build(*r, b_env);
+            builder::print_recipe(*rec);
+            auto res = builder::build(*rec, b_env);
             if (!res)
             {
                 logger::error(res.error());
