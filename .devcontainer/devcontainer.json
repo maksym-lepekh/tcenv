@@ -1,4 +1,5 @@
 {
+  "name": "env",
   "build": {
     "dockerfile": "../oci/Dockerfile.proj"
   },
@@ -15,7 +16,7 @@
     "-v",
     "tcenv-ccache:/root/.cache",
     "-v",
-    "ide-clangd:/proj/.clangd"
+    "ide-clangd:/proj/.clangd-internal"
   ],
   "customizations": {
     "vscode": {

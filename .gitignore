@@ -1,2 +1,3 @@
 cmake-build-*
 CMakeUserPresets.json
+.clangd-internal

@@ -1,8 +1,5 @@
 module;
-// there is a strange bug in order of includes that causes double symbols in module unit
-// clang format off
-#include <boost/filesystem.hpp>
-// clang format on
+
 #include <boost/asio/connect.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ssl/error.hpp>
@@ -13,39 +10,48 @@ module;
 #include <boost/beast/ssl.hpp>
 #include <boost/beast/version.hpp>
 #include <boost/url.hpp>
-#include <expected>
 #include <openssl/ssl.h>
 
+export module download_util;
+import std;
+import logger;
+import error;
+
+using namespace std::literals;
 namespace net   = boost::asio;
 namespace beast = boost::beast;
 namespace http  = beast::http;
-namespace fs    = boost::filesystem;
+namespace fs    = std::filesystem;
 
-export module download_util;
-import log;
+namespace
+{
+    auto to_msg(const beast::error_code& ecode) -> std::string
+    {
+        return ecode.category().name() + ":"s + ecode.message();
+    }
+}    // namespace
 
 namespace download_util
 {
-    export auto download(const std::string& url, const fs::path& dest)
-        -> std::expected<fs::path, boost::beast::error_code>
+    export auto download(const std::string& url, const fs::path& dest) -> result<fs::path>
     {
         auto parsed_url = boost::urls::parse_uri(url);
         auto host       = std::string(parsed_url->encoded_host());
         auto resource   = std::string(parsed_url->encoded_resource());
-        auto fname      = std::string(parsed_url->encoded_path());
-        if (fname.empty())
+        auto file_name  = std::string(parsed_url->encoded_path());
+        if (file_name.empty())
         {
-            fname = "file";
+            file_name = "file";
         }
-        if (fname.contains('/'))
+        if (file_name.contains('/'))
         {
-            fname = fname.substr(fname.find_last_of('/'));
+            file_name = file_name.substr(file_name.find_last_of('/') + 1);
         }
-        auto dest_file = dest / fname;
+        auto dest_file = dest / file_name;
 
-        log::debug("host =", host);
-        log::debug("resource =", resource);
-        log::debug("dest_file =", dest_file);
+        logger::debug("host =", host);
+        logger::debug("resource =", resource);
+        logger::debug("dest_file =", dest_file);
 
         auto ioc = net::io_context{};
         auto ctx = net::ssl::context{net::ssl::context::tlsv12_client};
@@ -55,7 +61,7 @@ namespace download_util
 
         stream.set_verify_mode(net::ssl::verify_none);
         stream.set_verify_callback(
-            [](bool preverified, net::ssl::verify_context& ctx)
+            [](bool, net::ssl::verify_context&)
             {
                 return true;    // Accept any certificate
             });
@@ -63,17 +69,19 @@ namespace download_util
         // Enable SNI
         if (!SSL_set_tlsext_host_name(stream.native_handle(), host.data()))
         {
-            beast::error_code ec{static_cast<int>(::ERR_get_error()), net::error::get_ssl_category()};
-            throw beast::system_error{ec};
+            beast::error_code error_c{static_cast<int>(ERR_get_error()), net::error::get_ssl_category()};
+            return std::unexpected(error_t{to_msg(error_c)});
         }
 
         // Connect to the HTTPS server
-        auto resolver = net::ip::tcp::resolver{ioc};
+        constexpr auto connect_timeout = std::chrono::seconds(30);
+        auto resolver                  = net::ip::tcp::resolver{ioc};
         get_lowest_layer(stream).connect(resolver.resolve({host, "443"}));
-        get_lowest_layer(stream).expires_after(std::chrono::seconds(30));
+        get_lowest_layer(stream).expires_after(connect_timeout);
 
         // Construct request
-        auto req = http::request<http::empty_body>{http::verb::get, resource, 11};
+        constexpr auto http_1_1_ver = 11;
+        auto req                    = http::request<http::empty_body>{http::verb::get, resource, http_1_1_ver};
         req.set(http::field::host, host);
         req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
 
@@ -83,25 +91,25 @@ namespace download_util
 
         // Receive the response
         beast::flat_buffer buffer;
-        auto res = http::response<http::file_body>{};
-        auto ec  = boost::beast::error_code{};
-        res.body().open(dest_file.c_str(), beast::file_mode::write, ec);
-        if (ec)
+        auto res   = http::response<http::file_body>{};
+        auto err_c = beast::error_code{};
+        res.body().open(dest_file.c_str(), beast::file_mode::write, err_c);
+        if (err_c)
         {
-            throw beast::system_error{ec};
+            return std::unexpected(error_t{to_msg(err_c)});
         }
 
         http::read(stream, buffer, res);
 
         // Cleanup
-        stream.shutdown(ec);
-        if (ec == net::error::eof)
+        stream.shutdown(err_c);
+        if (err_c == net::error::eof)
         {
-            ec = {};
+            err_c = {};
         }
-        if (ec)
+        if (err_c)
         {
-            throw beast::system_error{ec};
+            return std::unexpected(error_t{to_msg(err_c)});
         }
 
         return dest_file;
