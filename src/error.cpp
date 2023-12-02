@@ -1,6 +1,6 @@
 #include "error.hpp"
-#include <iostream>
 
+#include <iostream>
 
 auto operator<<(std::ostream& out, const error_t& err) -> std::ostream&
 {

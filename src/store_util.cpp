@@ -1,4 +1,5 @@
 #include "store_util.hpp"
+
 #include <fstream>
 
 using namespace std::literals;

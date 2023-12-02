@@ -2,8 +2,9 @@
 #define RECIPE_TYPES_HPP
 
 #include "error.hpp"
-#include <filesystem>
+
 #include <boost/process/environment.hpp>
+#include <filesystem>
 #include <picosha2.h>
 
 struct recipe
@@ -28,4 +29,4 @@ struct recipe
     [[nodiscard]] auto get_sha256() const -> std::string;
 };
 
-#endif // RECIPE_TYPES_HPP
+#endif    // RECIPE_TYPES_HPP

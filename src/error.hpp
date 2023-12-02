@@ -1,11 +1,10 @@
 #ifndef ERROR_HPP
 #define ERROR_HPP
 
+#include <expected>
+#include <source_location>
 #include <string>
 #include <system_error>
-#include <source_location>
-#include <expected>
-
 
 struct error_t
 {
@@ -32,4 +31,4 @@ auto operator<<(std::ostream& out, const error_t& err) -> std::ostream&;
 template <typename T = void>
 using result = std::expected<T, error_t>;
 
-#endif // ERROR_HPP
+#endif    // ERROR_HPP

@@ -1,5 +1,7 @@
 #include "recipe_repo.hpp"
 
+#include "recipe_builder.hpp"
+
 constexpr auto sed_4_9 = R"(
     [package]
     name = "sed"
@@ -13,7 +15,7 @@ constexpr auto sed_4_9 = R"(
     PATH = ['bin']
 )";
 
-auto recipe_repo::init()
+auto recipe_repo::init() -> bool
 {
     if (auto r = builder::from_toml(sed_4_9))
     {

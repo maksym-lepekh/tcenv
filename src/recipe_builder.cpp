@@ -1,10 +1,11 @@
 #include "recipe_builder.hpp"
 
-#include <boost/process.hpp>
-#include <toml++/toml.hpp>
 #include "control_flow.hpp"
 #include "download_step.hpp"
 #include "logger.hpp"
+
+#include <boost/process.hpp>
+#include <toml++/toml.hpp>
 
 namespace builder
 {
@@ -12,7 +13,7 @@ namespace builder
     void print_recipe(const recipe& input);
     auto build(const recipe& pkg_recipe, const recipe::build_env& env) -> result<void>;
     auto get_env_for_pkg(std::string_view name) -> recipe::build_env;
-}
+}    // namespace builder
 
 using namespace std::literals;
 
@@ -20,7 +21,6 @@ namespace builder
 {
     namespace fs   = std::filesystem;
     namespace proc = boost::process;
-
 
     void replace_special(std::string& input, const fs::path& install_dir)
     {
@@ -134,10 +134,7 @@ namespace builder
         auto src_sha = parsed["src"]["sha256"].value_or(""s);
         if (!src_url.empty())
         {
-            auto step = download_step{
-                .url = src_url,
-                .sha256 = src_sha
-            };
+            auto step = download_step{.url = src_url, .sha256 = src_sha};
 
             res.hash_data.append_range(step.get_sha_data());
             res.build_steps.push_back(std::move(step));
@@ -232,4 +229,4 @@ namespace builder
                                  .install_dir = root / "store" / name,
                                  .variables   = boost::this_process::environment()};
     }
-}
+}    // namespace builder

@@ -1,13 +1,13 @@
 #include "download_step.hpp"
-#include "control_flow.hpp"
-#include <picosha2.h>
 
+#include "archive_util.hpp"
+#include "control_flow.hpp"
 #include "download_util.hpp"
 #include "logger.hpp"
 #include "store_util.hpp"
-#include <fstream>
 
-#include "archive_util.hpp"
+#include <fstream>
+#include <picosha2.h>
 
 using namespace std::literals;
 
@@ -33,9 +33,9 @@ auto download_step::operator()(const recipe::build_env& env) const -> result<voi
     {
         logger::info("Downloaded:", downloaded.value());
 
-        auto ifs = std::ifstream{downloaded.value(), std::ios::binary};
+        auto ifs   = std::ifstream{downloaded.value(), std::ios::binary};
         auto first = std::istreambuf_iterator<char>(ifs);
-        auto last = std::istreambuf_iterator<char>();
+        auto last  = std::istreambuf_iterator<char>();
 
         auto f_sha = picosha2::hash256_hex_string(first, last);
 

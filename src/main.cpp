@@ -1,9 +1,9 @@
 #include "logger.hpp"
-#include <cstdlib>
-#include <string_view>
-
 #include "recipe_builder.hpp"
 #include "recipe_repo.hpp"
+
+#include <cstdlib>
+#include <string_view>
 
 using namespace std::literals;
 
@@ -24,7 +24,7 @@ auto main(int argc, char* argv[]) -> int
         repo.init();
         logger::info("Repo initialized");
 
-        auto b_env         = builder::get_env_for_pkg("sed");
+        auto b_env = builder::get_env_for_pkg("sed");
         if (auto rec = repo.find_by_name("sed"))
         {
             constexpr auto pkg = "sed";

@@ -1,4 +1,5 @@
 #include "download_util.hpp"
+
 #include "logger.hpp"
 
 #include <boost/asio/connect.hpp>

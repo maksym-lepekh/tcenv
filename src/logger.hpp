@@ -1,12 +1,11 @@
 #ifndef LOGGER_HPP
 #define LOGGER_HPP
 
+#include <array>
 #include <cassert>
 #include <ctime>
-#include <utility>
-#include <array>
 #include <iostream>
-
+#include <utility>
 
 struct logger
 {
@@ -62,4 +61,4 @@ private:
     }
 };
 
-#endif // LOGGER_HPP
+#endif    // LOGGER_HPP

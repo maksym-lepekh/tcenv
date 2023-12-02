@@ -1,11 +1,12 @@
 #include "archive_util.hpp"
+
+#include "c_api.hpp"
 #include "control_flow.hpp"
 #include "logger.hpp"
-#include "c_api.hpp"
+
 #include <archive.h>
 #include <archive_entry.h>
 #include <gsl/pointers>
-
 
 namespace
 {
