@@ -31,13 +31,13 @@ namespace builder
     auto run_child_proc(const fs::path& work_dir, const boost::process::environment& env, std::string exe,
                         std::vector<std::string> args)
     {
-        fs::create_directories(work_dir);
+        create_directories(work_dir);
         logger::debug("Run:", exe, "at", work_dir);
         for (auto&& arg: args)
         {
             logger::debug("   ", arg);
         }
-        auto code = proc::system(exe, proc::args += args, proc::start_dir = work_dir.c_str(), proc::env = env);
+        const auto code = proc::system(exe, proc::args += args, proc::start_dir = work_dir.c_str(), proc::env = env);
         logger::debug("Exit code:", code);
         return code == 0;
     }
@@ -67,11 +67,11 @@ namespace builder
         target_recipe.build_steps.emplace_back(
             [configureArgs = std::move(configureArgs), extr_dir](const recipe::build_env& env) -> result<void>
             {
-                auto c_file                     = env.source_dir / extr_dir / "configure";
+                const auto c_file               = env.source_dir / extr_dir / "configure";
                 auto c_env                      = env.variables;
                 c_env["FORCE_UNSAFE_CONFIGURE"] = "1";
-                auto c_args                     = std::vector<std::string>{"--prefix="s + env.install_dir.c_str()};
-                std::copy(configureArgs.begin(), configureArgs.end(), std::back_inserter(c_args));
+                auto c_args                     = std::vector{"--prefix="s + env.install_dir.c_str()};
+                std::ranges::copy(configureArgs, std::back_inserter(c_args));
 
                 if (!run_child_proc(env.build_dir, c_env, c_file.string(), c_args))
                 {
@@ -92,7 +92,7 @@ namespace builder
                 }
 
                 auto c_args = std::vector<std::string>{"-j", "16"};
-                std::copy(makeArgsCopy.begin(), makeArgsCopy.end(), std::back_inserter(c_args));
+                std::ranges::copy(makeArgsCopy, std::back_inserter(c_args));
 
                 if (!run_child_proc(env.build_dir, env.variables, proc::search_path("make").string(), c_args))
                 {
@@ -111,7 +111,7 @@ namespace builder
                     logger::info("makeArg", a);
                 }
                 auto c_args = std::vector<std::string>{"install"};
-                std::copy(makeArgsCopy.begin(), makeArgsCopy.end(), std::back_inserter(c_args));
+                std::ranges::copy(makeArgsCopy, std::back_inserter(c_args));
 
                 if (!run_child_proc(env.build_dir, env.variables, proc::search_path("make").string(), c_args))
                 {
@@ -140,14 +140,12 @@ namespace builder
             res.build_steps.push_back(std::move(step));
         }
 
-        auto preset = parsed["src"]["preset"].value_or("none"sv);
-        if (preset == "gnu")
+        if (auto preset = parsed["src"]["preset"].value_or("none"sv); preset == "gnu")
         {
             setup_gnu_recipe(res, parsed);
         }
 
-        auto env_node = parsed["propagates"]["env"];
-        if (env_node.is_table())
+        if (auto env_node = parsed["propagates"]["env"]; env_node.is_table())
         {
             for (auto&& [k, v]: *env_node.as_table())
             {
@@ -220,7 +218,7 @@ namespace builder
         return {};
     }
 
-    auto get_env_for_pkg(std::string_view name) -> recipe::build_env
+    auto get_env_for_pkg(const std::string_view name) -> recipe::build_env
     {
         const auto root = fs::path("/tcroot");
 

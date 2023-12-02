@@ -17,14 +17,14 @@ constexpr auto sed_4_9 = R"(
 
 auto recipe_repo::init() -> bool
 {
-    if (auto r = builder::from_toml(sed_4_9))
+    if (const auto r = builder::from_toml(sed_4_9))
     {
         recipes["sed"] = r.value();
     }
     return true;
 }
 
-auto recipe_repo::find_by_name(std::string_view pkg_name) -> std::optional<recipe>
+auto recipe_repo::find_by_name(const std::string_view pkg_name) -> std::optional<recipe>
 {
     if (recipes.contains(pkg_name.begin()))
     {

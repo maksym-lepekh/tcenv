@@ -34,12 +34,10 @@ auto download_step::operator()(const recipe::build_env& env) const -> result<voi
         logger::info("Downloaded:", downloaded.value());
 
         auto ifs   = std::ifstream{downloaded.value(), std::ios::binary};
-        auto first = std::istreambuf_iterator<char>(ifs);
+        auto first = std::istreambuf_iterator(ifs);
         auto last  = std::istreambuf_iterator<char>();
 
-        auto f_sha = picosha2::hash256_hex_string(first, last);
-
-        if (f_sha != sha256)
+        if (auto f_sha = picosha2::hash256_hex_string(first, last); f_sha != sha256)
         {
             return std::unexpected(error_t{"Downloaded sha256: "s + f_sha + ", expected: " + sha256});
         }

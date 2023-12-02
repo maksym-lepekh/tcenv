@@ -30,7 +30,7 @@ namespace
 
 namespace download_util
 {
-    auto download(const std::string& url, const fs::path& dest) -> result<fs::path>
+    auto download(const std::string& url, const path& dest) -> result<path>
     {
         auto parsed_url = boost::urls::parse_uri(url);
         auto host       = std::string(parsed_url->encoded_host());
