@@ -1,11 +1,8 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.27)
 
 project(tcenv VERSION 0.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD 23)
-
-# todo fixme for `import std`
-# set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 # ccache
 option(USE_CCACHE "Enable ccache in the build" ON)
@@ -13,10 +10,6 @@ find_program(CCACHE_PROGRAM ccache)
 if (CCACHE_PROGRAM AND USE_CCACHE)
     set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
 endif()
-
-# setup llvm compiler and libc++
-include(cmake/llvm.cmake)
-set_llvm_libcxx()
 
 include(FetchContent)
 FetchContent_Declare(GSL
@@ -66,11 +59,6 @@ add_executable(tcenv
         src/recipe_types.cpp
         src/recipe_repo.cpp
         src/recipe_builder.cpp
-)
-
-target_sources(tcenv PRIVATE
-        FILE_SET CXX_MODULES FILES
-        src/type_seq.cppm
 )
 
 target_link_options(tcenv PRIVATE

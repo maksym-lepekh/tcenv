@@ -135,8 +135,8 @@ namespace builder
         if (!src_url.empty())
         {
             auto step = download_step{.url = src_url, .sha256 = src_sha};
-
-            res.hash_data.append_range(step.get_sha_data());
+            auto sha_data = step.get_sha_data();
+            res.hash_data.insert(res.hash_data.end(), sha_data.begin(), sha_data.end());
             res.build_steps.push_back(std::move(step));
         }
 

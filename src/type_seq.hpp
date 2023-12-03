@@ -1,4 +1,5 @@
-export module type_sec;
+#ifndef TYPE_SEQ_HPP
+# define TYPE_SEQ_HPP
 
 // Andrei Alexandrescu encouraged me to add this into every project
 export template <typename...>
@@ -35,3 +36,5 @@ using tail_t = typename inspect<T>::tail_t;
 
 template <typename T, typename List>
 using concat_t = typename concat<T, List>::result_t;
+
+#endif    // TYPE_SEQ_HPP
