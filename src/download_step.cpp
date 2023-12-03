@@ -9,8 +9,6 @@
 #include <fstream>
 #include <picosha2.h>
 
-using namespace std::literals;
-
 namespace
 {
     constexpr auto tag_fname = "_tcenv.digest";
@@ -39,7 +37,7 @@ auto download_step::operator()(const recipe::build_env& env) const -> result<voi
 
         if (auto f_sha = picosha2::hash256_hex_string(first, last); f_sha != sha256)
         {
-            return std::unexpected(error_t{"Downloaded sha256: "s + f_sha + ", expected: " + sha256});
+            return std::unexpected(error_t{std::format("Downloaded sha256: {}, expected: {}", f_sha, sha256)});
         }
 
         TRY(file_marker::set(env.source_dir, tag_fname, sha256));

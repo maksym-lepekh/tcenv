@@ -24,7 +24,7 @@ namespace
 {
     auto to_msg(const beast::error_code& ecode) -> std::string
     {
-        return ecode.category().name() + ":"s + ecode.message();
+        return std::format("{}:{}", ecode.category().name(), ecode.message());
     }
 }    // namespace
 

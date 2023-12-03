@@ -1,6 +1,7 @@
 #ifndef ERROR_HPP
 #define ERROR_HPP
 
+#include <format>
 #include <expected>
 #include <source_location>
 #include <string>
@@ -11,7 +12,7 @@ struct error_t
     error_t(std::error_code ec, std::source_location caller_loc = std::source_location::current()): loc(caller_loc)
     {
         using namespace std::string_literals;
-        message = ec.category().name() + ":"s + ec.message();
+        message = std::format("{}:{}", ec.category().name(), ec.message());
     }
 
     error_t(const std::exception& e, std::source_location caller_loc = std::source_location::current()):
