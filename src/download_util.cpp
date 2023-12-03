@@ -1,7 +1,5 @@
 #include "download_util.hpp"
 
-#include "logger.hpp"
-
 #include <boost/asio/connect.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ssl/error.hpp>
@@ -13,6 +11,8 @@
 #include <boost/beast/version.hpp>
 #include <boost/url.hpp>
 #include <openssl/ssl.h>
+#include <spdlog/fmt/std.h>
+#include <spdlog/spdlog.h>
 
 using namespace std::literals;
 namespace net   = boost::asio;
@@ -46,9 +46,9 @@ namespace download_util
         }
         auto dest_file = dest / file_name;
 
-        logger::debug("host =", host);
-        logger::debug("resource =", resource);
-        logger::debug("dest_file =", dest_file);
+        spdlog::debug("host = {}", host);
+        spdlog::debug("resource = {}", resource);
+        spdlog::debug("dest_file = {}", dest_file);
 
         auto ioc = net::io_context{};
         auto ctx = net::ssl::context{net::ssl::context::tlsv12_client};

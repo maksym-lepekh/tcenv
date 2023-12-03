@@ -1,8 +1,9 @@
-#include "logger.hpp"
 #include "recipe_builder.hpp"
 #include "recipe_repo.hpp"
 
 #include <cstdlib>
+#include <spdlog/fmt/ranges.h>
+#include <spdlog/spdlog.h>
 #include <string_view>
 
 using namespace std::literals;
@@ -11,28 +12,28 @@ auto main(int argc, char* argv[]) -> int
 {
     if (argc != 2)
     {
-        logger::info("wrong args");
+        spdlog::info("wrong args");
         return EXIT_FAILURE;
     }
 
-    logger::set_debug(true);
+    spdlog::set_level(spdlog::level::debug);
 
     if (argv[1] == "test"sv)
     {
-        logger::info("Selected 'test'");
+        spdlog::info("Selected 'test'");
         auto repo = recipe_repo{};
         repo.init();
-        logger::info("Repo initialized");
+        spdlog::info("Repo initialized");
 
         auto b_env = builder::get_env_for_pkg("sed");
         if (auto rec = repo.find_by_name("sed"))
         {
             constexpr auto pkg = "sed";
-            logger::info("Found recipe for", pkg);
+            spdlog::info("Found recipe for {}", pkg);
             builder::print_recipe(*rec);
             if (auto res = builder::build(*rec, b_env); !res)
             {
-                logger::error(res.error());
+                spdlog::error(res.error());
                 return EXIT_FAILURE;
             }
         }

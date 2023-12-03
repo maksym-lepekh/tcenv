@@ -36,7 +36,13 @@ FetchContent_Declare(
         GIT_TAG v1.0.0
 )
 
-FetchContent_MakeAvailable(GSL tomlplusplus digestpp PicoSHA2)
+FetchContent_Declare(
+        spdlog
+        GIT_REPOSITORY https://github.com/gabime/spdlog.git
+        GIT_TAG v1.12.0
+)
+
+FetchContent_MakeAvailable(GSL tomlplusplus digestpp PicoSHA2 spdlog)
 
 # boost
 set(Boost_USE_STATIC_RUNTIME ON)
@@ -51,7 +57,6 @@ tcenv_find_pkgconfig(libssl)
 add_executable(tcenv
         src/main.cpp
         src/control_flow.hpp
-        src/error.cpp
         src/archive_util.cpp
         src/download_step.cpp
         src/download_util.cpp
@@ -73,6 +78,7 @@ target_link_libraries(tcenv
         libarchive::static
         Microsoft.GSL::GSL
         tomlplusplus::tomlplusplus
+        spdlog::spdlog
 )
 
 target_include_directories(tcenv PRIVATE

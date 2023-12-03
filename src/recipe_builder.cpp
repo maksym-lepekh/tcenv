@@ -2,9 +2,10 @@
 
 #include "control_flow.hpp"
 #include "download_step.hpp"
-#include "logger.hpp"
 
 #include <boost/process.hpp>
+#include <spdlog/fmt/std.h>
+#include <spdlog/spdlog.h>
 #include <toml++/toml.hpp>
 
 namespace builder
@@ -32,13 +33,13 @@ namespace builder
                         std::vector<std::string> args)
     {
         create_directories(work_dir);
-        logger::debug("Run:", exe, "at", work_dir);
+        spdlog::debug("Run: {} at {}", exe, work_dir);
         for (auto&& arg: args)
         {
-            logger::debug("   ", arg);
+            spdlog::debug("   {}", arg);
         }
         const auto code = proc::system(exe, proc::args += args, proc::start_dir = work_dir.c_str(), proc::env = env);
-        logger::debug("Exit code:", code);
+        spdlog::debug("Exit code: {}", code);
         return code == 0;
     }
 
@@ -88,7 +89,7 @@ namespace builder
                 for (auto& a: makeArgsCopy)
                 {
                     replace_special(a, env.install_dir);
-                    logger::info("makeArg", a);
+                    spdlog::info("makeArg {}", a);
                 }
 
                 auto c_args = std::vector<std::string>{"-j", "16"};
@@ -108,7 +109,7 @@ namespace builder
                 for (auto& a: makeArgsCopy)
                 {
                     replace_special(a, env.install_dir);
-                    logger::info("makeArg", a);
+                    spdlog::info("makeArg {}", a);
                 }
                 auto c_args = std::vector<std::string>{"install"};
                 std::ranges::copy(makeArgsCopy, std::back_inserter(c_args));
@@ -134,7 +135,7 @@ namespace builder
         auto src_sha = parsed["src"]["sha256"].value_or(""s);
         if (!src_url.empty())
         {
-            auto step = download_step{.url = src_url, .sha256 = src_sha};
+            auto step     = download_step{.url = src_url, .sha256 = src_sha};
             auto sha_data = step.get_sha_data();
             res.hash_data.insert(res.hash_data.end(), sha_data.begin(), sha_data.end());
             res.build_steps.push_back(std::move(step));
@@ -158,7 +159,7 @@ namespace builder
                 }
                 else
                 {
-                    logger::error("Key", k, " should contain array, but it has", v.type());
+                    spdlog::error("Key {} should contain array, but it has {}", k, v.type());
                     // todo make it better
                     return std::unexpected(error_t{"Parse error"});
                 }
@@ -166,7 +167,7 @@ namespace builder
         }
         else
         {
-            logger::error("'propagates.env' is not a table, it is", env_node);
+            spdlog::error("'propagates.env' is not a table, it is {}", env_node);
             // todo make it better
             return std::unexpected(error_t{"Parse error"});
         }
@@ -176,16 +177,16 @@ namespace builder
 
     void print_recipe(const recipe& input)
     {
-        logger::debug(input.package_name, input.package_version);
-        logger::debug("Propagates:");
+        spdlog::debug("{} {}", input.package_name, input.package_version);
+        spdlog::debug("Propagates:");
         for (auto&& [var_name, var_val]: input.propagatesEnv)
         {
-            logger::debug("\t", var_name, var_val);
+            spdlog::debug("    {}={}", var_name, var_val);
         }
-        logger::debug("Hash data");
+        spdlog::debug("Hash data");
         for (auto&& hash_part: input.hash_data)
         {
-            logger::debug("\t", hash_part);
+            spdlog::debug("    {}", hash_part);
         }
     }
 
@@ -205,7 +206,7 @@ namespace builder
     {
         if (is_success(env.install_dir))
         {
-            logger::info("Already built", pkg_recipe.package_name);
+            spdlog::info("Already built: {}", pkg_recipe.package_name);
             return {};
         }
 

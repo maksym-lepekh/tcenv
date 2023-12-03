@@ -2,11 +2,12 @@
 
 #include "c_api.hpp"
 #include "control_flow.hpp"
-#include "logger.hpp"
 
 #include <archive.h>
 #include <archive_entry.h>
 #include <gsl/pointers>
+#include <spdlog/fmt/std.h>
+#include <spdlog/spdlog.h>
 
 namespace
 {
@@ -40,8 +41,8 @@ namespace archive_util
 {
     auto extract(const path& input, const path& dest) -> result<void>
     {
-        logger::debug("input = ", input);
-        logger::debug("dest = ", dest);
+        spdlog::debug("input = {}", input);
+        spdlog::debug("dest = {}", dest);
 
         auto reader = c_api::opaque(archive_read_new, archive_read_free);
 

@@ -1,9 +1,10 @@
 #ifndef ERROR_HPP
 #define ERROR_HPP
 
-#include <format>
 #include <expected>
+#include <format>
 #include <source_location>
+#include <spdlog/fmt/fmt.h>
 #include <string>
 #include <system_error>
 
@@ -27,9 +28,17 @@ struct error_t
     std::source_location loc;
 };
 
-auto operator<<(std::ostream& out, const error_t& err) -> std::ostream&;
-
 template <typename T = void>
 using result = std::expected<T, error_t>;
+
+template <>
+struct fmt::formatter<error_t>: fmt::formatter<std::string>
+{
+    auto format(error_t err, format_context& ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "{}@{}[{}:{}:{}]", err.message, err.loc.function_name(), err.loc.file_name(),
+                              err.loc.line(), err.loc.column());
+    }
+};
 
 #endif    // ERROR_HPP

@@ -3,11 +3,12 @@
 #include "archive_util.hpp"
 #include "control_flow.hpp"
 #include "download_util.hpp"
-#include "logger.hpp"
 #include "store_util.hpp"
 
 #include <fstream>
 #include <picosha2.h>
+#include <spdlog/fmt/std.h>
+#include <spdlog/spdlog.h>
 
 namespace
 {
@@ -18,18 +19,18 @@ auto download_step::operator()(const recipe::build_env& env) const -> result<voi
 {
     if (file_marker::is_set(env.source_dir, tag_fname, sha256))
     {
-        logger::info("Already downloaded", url);
+        spdlog::info("Already downloaded: {}", url);
     }
 
     if (create_directories(env.source_dir))
     {
-        logger::info("Created dir:", env.source_dir);
+        spdlog::info("Created dir: {}", env.source_dir);
     }
 
     auto downloaded = download_util::download(url, env.source_dir);
     if (downloaded)
     {
-        logger::info("Downloaded:", downloaded.value());
+        spdlog::info("Downloaded: {}", downloaded.value());
 
         auto ifs   = std::ifstream{downloaded.value(), std::ios::binary};
         auto first = std::istreambuf_iterator(ifs);
