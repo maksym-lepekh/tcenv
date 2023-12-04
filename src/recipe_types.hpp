@@ -26,7 +26,7 @@ struct recipe
     std::vector<build_step_fn> build_steps = {};
     std::vector<std::string> hash_data;
 
-    [[nodiscard]] auto get_sha256() const -> std::string;
+    [[nodiscard]] auto get_hash() const -> std::string;
 };
 
 #endif    // RECIPE_TYPES_HPP

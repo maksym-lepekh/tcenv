@@ -25,12 +25,13 @@ auto main(int argc, char* argv[]) -> int
         repo.init();
         spdlog::info("Repo initialized");
 
-        auto b_env = builder::get_env_for_pkg("sed");
-        if (auto rec = repo.find_by_name("sed"))
+        constexpr auto pkg = "sed";
+        if (auto rec = repo.find_by_name(pkg))
         {
-            constexpr auto pkg = "sed";
             spdlog::info("Found recipe for {}", pkg);
             builder::print_recipe(*rec);
+
+            auto b_env = builder::get_env_for_pkg(rec.value());
             if (auto res = builder::build(*rec, b_env); !res)
             {
                 spdlog::error(res.error());

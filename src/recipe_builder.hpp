@@ -11,7 +11,7 @@ namespace builder
 
     auto build(const recipe& pkg_recipe, const recipe::build_env& env) -> result<void>;
 
-    auto get_env_for_pkg(std::string_view name) -> recipe::build_env;
+    auto get_env_for_pkg(const recipe& rec) -> recipe::build_env;
 }    // namespace builder
 
 #endif    // RECIPE_BUILDER_HPP

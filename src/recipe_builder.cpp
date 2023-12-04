@@ -10,14 +10,6 @@
 #include <spdlog/spdlog.h>
 #include <toml++/toml.hpp>
 
-namespace builder
-{
-    auto from_toml(std::string_view input) -> result<recipe>;
-    void print_recipe(const recipe& input);
-    auto build(const recipe& pkg_recipe, const recipe::build_env& env) -> result<void>;
-    auto get_env_for_pkg(std::string_view name) -> recipe::build_env;
-}    // namespace builder
-
 using namespace std::literals;
 
 namespace builder
@@ -129,6 +121,7 @@ namespace builder
     void print_recipe(const recipe& input)
     {
         spdlog::debug("{} {}", input.package_name, input.package_version);
+        spdlog::debug("Recipe hash: {}", input.get_hash());
         spdlog::debug("Propagates:");
         for (auto&& [var_name, var_val]: input.propagatesEnv)
         {
@@ -170,13 +163,14 @@ namespace builder
         return {};
     }
 
-    auto get_env_for_pkg(const std::string_view name) -> recipe::build_env
+    auto get_env_for_pkg(const recipe& rec) -> recipe::build_env
     {
-        const auto root = fs::path("/tcroot");
+        const auto root     = path("/tcroot");
+        const auto dir_name = std::format("{}-{}-{}", rec.get_hash(), rec.package_name, rec.package_version);
 
-        return recipe::build_env{.source_dir  = root / "src" / name,
-                                 .build_dir   = root / "bld" / name,
-                                 .install_dir = root / "store" / name,
+        return recipe::build_env{.source_dir  = root / "src" / dir_name,
+                                 .build_dir   = root / "bld" / dir_name,
+                                 .install_dir = root / "store" / dir_name,
                                  .variables   = boost::this_process::environment()};
     }
 }    // namespace builder
