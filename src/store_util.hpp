@@ -17,4 +17,11 @@ namespace file_marker
     auto set(const path& base_dir, std::string_view name, std::string_view val = {}) -> result<>;
 }    // namespace file_marker
 
+namespace pattern
+{
+    constexpr auto source_dir  = "$TCENV{SOURCE_DIR}";
+    constexpr auto build_dir   = "$TCENV{BUILD_DIR}";
+    constexpr auto install_dir = "$TCENV{INSTALL_DIR}";
+}    // namespace pattern
+
 #endif    // STORE_UTIL_HPP

@@ -2,6 +2,8 @@
 
 #include "control_flow.hpp"
 #include "download_step.hpp"
+#include "store_util.hpp"
+#include "subproc_step.hpp"
 
 #include <boost/process.hpp>
 #include <spdlog/fmt/std.h>
@@ -22,26 +24,7 @@ namespace builder
 {
     namespace fs   = std::filesystem;
     namespace proc = boost::process;
-
-    void replace_special(std::string& input, const fs::path& install_dir)
-    {
-        constexpr auto install_dir_pattern = "${TCENV.INSTALL_DIR}";
-        boost::replace_all(input, install_dir_pattern, install_dir.c_str());
-    }
-
-    auto run_child_proc(const fs::path& work_dir, const boost::process::environment& env, std::string exe,
-                        std::vector<std::string> args)
-    {
-        create_directories(work_dir);
-        spdlog::debug("Run: {} at {}", exe, work_dir);
-        for (auto&& arg: args)
-        {
-            spdlog::debug("   {}", arg);
-        }
-        const auto code = proc::system(exe, proc::args += args, proc::start_dir = work_dir.c_str(), proc::env = env);
-        spdlog::debug("Exit code: {}", code);
-        return code == 0;
-    }
+    using std::filesystem::path;
 
     void setup_gnu_recipe(recipe& target_recipe, toml::table& parsed_table)
     {
@@ -62,64 +45,32 @@ namespace builder
                 makeArgs.push_back(item.value_or("ERROR"s));
             }
         }
-        // todo add to hash_data
 
         auto extr_dir = target_recipe.package_name + "-" + target_recipe.package_version;
-        target_recipe.build_steps.emplace_back(
-            [configureArgs = std::move(configureArgs), extr_dir](const recipe::build_env& env) -> result<void>
-            {
-                const auto c_file               = env.source_dir / extr_dir / "configure";
-                auto c_env                      = env.variables;
-                c_env["FORCE_UNSAFE_CONFIGURE"] = "1";
-                auto c_args                     = std::vector{"--prefix="s + env.install_dir.c_str()};
-                std::ranges::copy(configureArgs, std::back_inserter(c_args));
 
-                if (!run_child_proc(env.build_dir, c_env, c_file.string(), c_args))
-                {
-                    return std::unexpected(error_t{"Process failed"});
-                }
+        // configure
+        auto conf_step     = subproc_step{};
+        conf_step.exe      = {rel_path::source_dir, path{extr_dir} / "configure"};
+        conf_step.work_dir = {rel_path::build_dir, {}};
+        conf_step.aux_env.emplace_back("FORCE_UNSAFE_CONFIGURE", "1");
+        conf_step.args = configureArgs;
+        conf_step.args.push_back(std::format("--prefix={}", pattern::install_dir));
+        std::ranges::copy(conf_step.get_sha_data(), std::back_inserter(target_recipe.hash_data));
+        target_recipe.build_steps.push_back(std::move(conf_step));
 
-                return {};
-            });
+        // make
+        auto make_step     = subproc_step{};
+        make_step.exe      = {rel_path::search, "make"};
+        make_step.work_dir = {rel_path::build_dir, {}};
+        make_step.args     = {"-j", "16"};
+        std::ranges::copy(makeArgs, std::back_inserter(make_step.args));
+        std::ranges::copy(make_step.get_sha_data(), std::back_inserter(target_recipe.hash_data));
+        target_recipe.build_steps.push_back(make_step);
 
-        target_recipe.build_steps.emplace_back(
-            [makeArgs = std::move(makeArgs)](const recipe::build_env& env) -> result<void>
-            {
-                auto makeArgsCopy = makeArgs;
-                for (auto& a: makeArgsCopy)
-                {
-                    replace_special(a, env.install_dir);
-                    spdlog::info("makeArg {}", a);
-                }
-
-                auto c_args = std::vector<std::string>{"-j", "16"};
-                std::ranges::copy(makeArgsCopy, std::back_inserter(c_args));
-
-                if (!run_child_proc(env.build_dir, env.variables, proc::search_path("make").string(), c_args))
-                {
-                    return std::unexpected(error_t{"Process failed"});
-                }
-                return {};
-            });
-
-        target_recipe.build_steps.emplace_back(
-            [makeArgs = std::move(makeArgs)](const recipe::build_env& env) -> result<void>
-            {
-                auto makeArgsCopy = makeArgs;
-                for (auto& a: makeArgsCopy)
-                {
-                    replace_special(a, env.install_dir);
-                    spdlog::info("makeArg {}", a);
-                }
-                auto c_args = std::vector<std::string>{"install"};
-                std::ranges::copy(makeArgsCopy, std::back_inserter(c_args));
-
-                if (!run_child_proc(env.build_dir, env.variables, proc::search_path("make").string(), c_args))
-                {
-                    return std::unexpected(error_t{"Process failed"});
-                }
-                return {};
-            });
+        // make install, reuse struct above
+        make_step.args = {"install"};
+        std::ranges::copy(make_step.get_sha_data(), std::back_inserter(target_recipe.hash_data));
+        target_recipe.build_steps.push_back(std::move(make_step));
     }
 
     auto from_toml(std::string_view input) -> result<recipe>

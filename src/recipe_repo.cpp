@@ -9,6 +9,7 @@ constexpr auto sed_4_9 = R"(
 
     [src]
     url = "https://ftp.gnu.org/gnu/sed/sed-4.9.tar.xz"
+    sha256 = "6e226b732e1cd739464ad6862bd1a1aba42d7982922da7a53519631d24975181"
     preset = "gnu"
 
     [propagates.env]

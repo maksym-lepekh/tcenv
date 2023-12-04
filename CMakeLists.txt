@@ -64,6 +64,8 @@ add_executable(tcenv
         src/recipe_types.cpp
         src/recipe_repo.cpp
         src/recipe_builder.cpp
+        src/subproc_step.hpp
+        src/subproc_step.cpp
 )
 
 target_link_options(tcenv PRIVATE
