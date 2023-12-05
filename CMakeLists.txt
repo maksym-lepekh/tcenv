@@ -42,7 +42,13 @@ FetchContent_Declare(
         GIT_TAG v1.12.0
 )
 
-FetchContent_MakeAvailable(GSL tomlplusplus digestpp PicoSHA2 spdlog)
+FetchContent_Declare(
+        argparse
+        GIT_REPOSITORY https://github.com/morrisfranken/argparse.git
+        GIT_TAG 5d3710809364e694f33243810bbd1345975ae1c3
+)
+
+FetchContent_MakeAvailable(GSL tomlplusplus digestpp PicoSHA2 spdlog argparse)
 
 # boost
 set(Boost_USE_STATIC_RUNTIME ON)
@@ -81,6 +87,7 @@ target_link_libraries(tcenv
         Microsoft.GSL::GSL
         tomlplusplus::tomlplusplus
         spdlog::spdlog
+        morrisfranken::argparse
 )
 
 target_include_directories(tcenv PRIVATE
