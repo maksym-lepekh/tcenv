@@ -21,18 +21,20 @@ namespace builder
     void setup_gnu_recipe(recipe& target_recipe, toml::table& parsed_table)
     {
         std::vector<std::string> configureArgs;
-        if (parsed_table.contains("configureArgs"))
+        auto&& confArgsNode = parsed_table["gnu"]["configureArgs"];
+        if (confArgsNode.is_array())
         {
-            for (auto&& item: *parsed_table["configureArgs"].as_array())
+            for (auto&& item: *confArgsNode.as_array())
             {
                 configureArgs.push_back(item.value_or("ERROR"s));
             }
         }
 
         std::vector<std::string> makeArgs;
+        auto&& makeArgsNode = parsed_table["gnu"]["makeArgs"];
         if (parsed_table.contains("makeArgs"))
         {
-            for (auto&& item: *parsed_table["makeArgs"].as_array())
+            for (auto&& item: *makeArgsNode.as_array())
             {
                 makeArgs.push_back(item.value_or("ERROR"s));
             }

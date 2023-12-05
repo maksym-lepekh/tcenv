@@ -18,6 +18,7 @@ struct test_args: argparse::Args
         auto repo = recipe_repo{};
         repo.init();
         spdlog::info("Repo initialized");
+        repo.print_list();
 
         if (auto rec = repo.find_by_name(pkg_name))
         {

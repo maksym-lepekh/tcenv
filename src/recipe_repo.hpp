@@ -9,6 +9,8 @@ struct recipe_repo
 
     auto find_by_name(std::string_view pkg_name) -> std::optional<recipe>;
 
+    void print_list();
+
     std::unordered_map<std::string, recipe> recipes;
 };
 

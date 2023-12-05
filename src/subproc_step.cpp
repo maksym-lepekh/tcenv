@@ -89,14 +89,14 @@ auto subproc_step::get_sha_data() const -> std::vector<std::string>
     namespace views = std::ranges::views;
 
     auto res = std::vector<std::string>{};
+    std::ranges::copy(aux_env
+                          | views::transform([](auto&& pair) { return std::format("{}={}", pair.first, pair.second); }),
+                      std::back_inserter(res));
     res.push_back(exe.value);
 
     // todo should we add work dir into the mix?
     // res.push_back(work_dir.value);
 
     std::ranges::copy(args, std::back_inserter(res));
-    std::ranges::copy(aux_env
-                          | views::transform([](auto&& pair) { return std::format("{}={}", pair.first, pair.second); }),
-                      std::back_inserter(res));
     return res;
 }
