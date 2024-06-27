@@ -25,6 +25,7 @@ constexpr auto coreutils_9_4 = R"(
 
     [src]
     url = "https://ftp.gnu.org/gnu/coreutils/coreutils-9.4.tar.xz"
+    sha256 = "ea613a4cf44612326e917201bbbcdfbd301de21ffc3b59b6e5c07e040b275e52"
     preset = "gnu"
 
     [propagates.env]
@@ -52,6 +53,7 @@ constexpr auto make_4_4 = R"(
 
     [src]
     url = "https://ftp.gnu.org/gnu/make/make-4.4.tar.lz"
+    sha256 = "48d0fc0b2a04bb50f2911c16da65723285f7f4804c74fc5a2124a3df6c5f78c4"
     preset = "gnu"
 
     [propagates.env]
@@ -65,6 +67,7 @@ constexpr auto glibc_2_37 = R"(
 
     [src]
     url = "https://ftp.gnu.org/gnu/glibc/glibc-2.37.tar.xz"
+    sha256 = "2257eff111a1815d74f46856daaf40b019c1e553156c69d48ba0cbfc1bb91a43"
     preset = "gnu"
 
     [propagates.env]
@@ -80,6 +83,7 @@ constexpr auto gawk_5_2_2 = R"(
 
     [src]
     url = "https://ftp.gnu.org/gnu/gawk/gawk-5.2.2.tar.xz"
+    sha256 = "3c1fce1446b4cbee1cd273bd7ec64bc87d89f61537471cd3e05e33a965a250e9"
     preset = "gnu"
 
     [propagates.env]
@@ -93,6 +97,7 @@ constexpr auto binutils_2_41 = R"(
 
     [src]
     url = "https://ftp.gnu.org/gnu/binutils/binutils-2.41.tar.xz"
+    sha256 = "ae9a5789e23459e59606e6714723f2d3ffc31c03174191ef0d015bdf06007450"
     preset = "gnu"
 
     [propagates.env]
@@ -106,6 +111,7 @@ constexpr auto gcc_13_2_0 = R"(
 
     [src]
     url = "https://ftp.gnu.org/gnu/gcc/gcc-13.2.0/gcc-13.2.0.tar.xz"
+    sha256 = "e275e76442a6067341a27f04c5c6b83d8613144004c0413528863dc6b5c743da"
     preset = "gnu"
 
     [gnu]

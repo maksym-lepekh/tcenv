@@ -36,9 +36,39 @@ struct test_args: argparse::Args
     }
 };
 
+struct build_args: argparse::Args
+{
+    std::vector<std::string>& pkgs = arg("Package names").multi_argument();
+
+    int run() override
+    {
+        auto repo = recipe_repo{};
+        repo.init();
+
+        for (auto&& p: pkgs)
+        {
+            if (auto rec = repo.find_by_name(p))
+            {
+                spdlog::info("Found recipe for {}", rec->package_name);
+                builder::print_recipe(*rec);
+
+                auto b_env = builder::get_env_for_pkg(rec.value());
+                if (auto res = builder::build(*rec, b_env); !res)
+                {
+                    spdlog::error(res.error());
+                    return EXIT_FAILURE;
+                }
+            }
+        }
+
+        return EXIT_SUCCESS;
+    }
+};
+
 struct app_args: argparse::Args
 {
-    test_args& cmd = subcommand("test");
+    test_args& cmd1  = subcommand("test");
+    build_args& cmd2 = subcommand("build");
     bool& verbose  = flag("v,verbose", "Enable more verbose output");
 };
 

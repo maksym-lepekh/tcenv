@@ -6,7 +6,7 @@ RUN apk add --no-cache g++ \
     zstd-static lz4-static \
     openssl-libs-static  \
     gdb ccache git just clang17-extra-tools \
-    linux-headers
+    linux-headers lf vim
 
 RUN wget https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/boost_1_82_0.tar.bz2 \
     && tar --bzip2 -xf boost_1_82_0.tar.bz2 \

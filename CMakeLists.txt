@@ -12,7 +12,8 @@ if (CCACHE_PROGRAM AND USE_CCACHE)
 endif()
 
 include(FetchContent)
-FetchContent_Declare(GSL
+FetchContent_Declare(
+        GSL
         GIT_REPOSITORY "https://github.com/microsoft/GSL"
         GIT_TAG "v4.0.0"
         GIT_SHALLOW ON
@@ -48,7 +49,13 @@ FetchContent_Declare(
         GIT_TAG 5d3710809364e694f33243810bbd1345975ae1c3
 )
 
-FetchContent_MakeAvailable(GSL tomlplusplus digestpp PicoSHA2 spdlog argparse)
+FetchContent_Declare(
+        cpp-httplib
+        GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
+        GIT_TAG v0.14.2
+)
+
+FetchContent_MakeAvailable(GSL tomlplusplus digestpp PicoSHA2 spdlog argparse cpp-httplib)
 
 # boost
 set(Boost_USE_STATIC_RUNTIME ON)
@@ -93,6 +100,7 @@ target_link_libraries(tcenv
 target_include_directories(tcenv PRIVATE
         ${digestpp_SOURCE_DIR}
         ${picosha2_SOURCE_DIR}
+        ${httplib_SOURCE_DIR}
 )
 
 install(TARGETS tcenv DESTINATION bin)
